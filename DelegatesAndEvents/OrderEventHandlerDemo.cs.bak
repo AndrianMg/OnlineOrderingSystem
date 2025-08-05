@@ -1,0 +1,265 @@
+using System;
+using System.Collections.Generic;
+using OnlineOrderingSystem.Models;
+
+namespace OnlineOrderingSystem.DelegatesAndEvents
+{
+    /// <summary>
+    /// Demonstration program for OrderEventHandler functionality
+    /// Shows practical usage of delegates, events, and lambda expressions
+    /// </summary>
+    public class OrderEventHandlerDemo
+    {
+        /// <summary>
+        /// Runs the complete demonstration of OrderEventHandler functionality
+        /// </summary>
+        public static void RunDemo()
+        {
+            Console.WriteLine("🎯 OrderEventHandler Demo - Delegates, Events & Lambda Expressions");
+            Console.WriteLine("=" .PadRight(60, '='));
+            
+            // Create integration instance
+            var integration = new OrderProcessor();
+            
+            // Demo 1: Basic order processing with events
+            DemoBasicOrderProcessing(integration);
+            
+            // Demo 2: Payment processing with events
+            DemoPaymentProcessing(integration);
+            
+            // Demo 3: Order analytics with lambda expressions
+            DemoOrderAnalytics(integration);
+            
+            // Demo 4: Functional programming with lambda expressions
+            DemoFunctionalProgramming(integration);
+            
+            Console.WriteLine("\n✅ Demo completed successfully!");
+        }
+
+        /// <summary>
+        /// Demonstrates basic order processing with event handling
+        /// </summary>
+        /// <param name="integration">OrderProcessor instance</param>
+        private static void DemoBasicOrderProcessing(OrderProcessor integration)
+        {
+            Console.WriteLine("\n📋 Demo 1: Basic Order Processing with Events");
+            Console.WriteLine("-" .PadRight(40, '-'));
+            
+            // Create sample items
+            var items = new List<Item>
+            {
+                new Item { Id = 1, Name = "Margherita Pizza", Price = 12.99, Category = "Pizza" },
+                new Item { Id = 2, Name = "Caesar Salad", Price = 8.50, Category = "Salad" },
+                new Item { Id = 3, Name = "Chocolate Cake", Price = 6.99, Category = "Dessert" }
+            };
+            
+            // Process order with events
+            var order = integration.ProcessCompleteOrder(1, items);
+            
+            Console.WriteLine($"\n📦 Final Order Summary:");
+            Console.WriteLine($"  Order ID: {order.OrderID}");
+            Console.WriteLine($"  Customer ID: {order.CustomerID}");
+            Console.WriteLine($"  Status: {order.OrderStatus}");
+            Console.WriteLine($"  Total Amount: £{order.TotalAmount:F2}");
+        }
+
+        /// <summary>
+        /// Demonstrates payment processing with event handling
+        /// </summary>
+        /// <param name="integration">OrderProcessor instance</param>
+        private static void DemoPaymentProcessing(OrderProcessor integration)
+        {
+            Console.WriteLine("\n💳 Demo 2: Payment Processing with Events");
+            Console.WriteLine("-" .PadRight(40, '-'));
+            
+            // Test different payment methods
+            var paymentMethods = new[] { "Credit", "Cash", "Check" };
+            var amounts = new[] { 25.50, 15.75, 32.99 };
+            
+            for (int i = 0; i < paymentMethods.Length; i++)
+            {
+                var success = integration.ProcessPaymentWithEvents(paymentMethods[i], amounts[i]);
+                Console.WriteLine($"  Result: {(success ? "✅ Success" : "❌ Failed")}");
+                Console.WriteLine();
+            }
+        }
+
+        /// <summary>
+        /// Demonstrates order analytics using lambda expressions
+        /// </summary>
+        /// <param name="integration">OrderProcessor instance</param>
+        private static void DemoOrderAnalytics(OrderProcessor integration)
+        {
+            Console.WriteLine("\n📊 Demo 3: Order Analytics with Lambda Expressions");
+            Console.WriteLine("-" .PadRight(40, '-'));
+            
+            // Create sample orders
+            var orders = CreateSampleOrders();
+            
+            // Demonstrate analytics
+            integration.DemonstrateOrderAnalytics(orders);
+        }
+
+        /// <summary>
+        /// Demonstrates functional programming with lambda expressions
+        /// </summary>
+        /// <param name="integration">OrderProcessor instance</param>
+        private static void DemoFunctionalProgramming(OrderProcessor integration)
+        {
+            Console.WriteLine("\n🔧 Demo 4: Functional Programming with Lambda Expressions");
+            Console.WriteLine("-" .PadRight(40, '-'));
+            
+            // Create sample orders
+            var orders = CreateSampleOrders();
+            
+            // Demonstrate functional programming
+            integration.DemonstrateFunctionalProgramming(orders);
+        }
+
+        /// <summary>
+        /// Creates sample orders for demonstration purposes
+        /// </summary>
+        /// <returns>List of sample orders</returns>
+        private static List<Order> CreateSampleOrders()
+        {
+            var orders = new List<Order>();
+            
+            // Order 1 - High value, recent
+            var order1 = new Order
+            {
+                OrderID = 1001,
+                CustomerID = 1,
+                OrderDate = DateTime.Now.AddDays(-2),
+                OrderStatus = "Delivered",
+                TotalAmount = 45.99
+            };
+            orders.Add(order1);
+            
+            // Order 2 - Medium value, recent
+            var order2 = new Order
+            {
+                OrderID = 1002,
+                CustomerID = 2,
+                OrderDate = DateTime.Now.AddDays(-1),
+                OrderStatus = "Pending",
+                TotalAmount = 28.50
+            };
+            orders.Add(order2);
+            
+            // Order 3 - Low value, older
+            var order3 = new Order
+            {
+                OrderID = 1003,
+                CustomerID = 3,
+                OrderDate = DateTime.Now.AddDays(-10),
+                OrderStatus = "Delivered",
+                TotalAmount = 15.75
+            };
+            orders.Add(order3);
+            
+            // Order 4 - High value, older
+            var order4 = new Order
+            {
+                OrderID = 1004,
+                CustomerID = 1,
+                OrderDate = DateTime.Now.AddDays(-15),
+                OrderStatus = "Delivered",
+                TotalAmount = 67.25
+            };
+            orders.Add(order4);
+            
+            // Order 5 - Medium value, recent
+            var order5 = new Order
+            {
+                OrderID = 1005,
+                CustomerID = 4,
+                OrderDate = DateTime.Now.AddHours(-6),
+                OrderStatus = "Preparing",
+                TotalAmount = 32.99
+            };
+            orders.Add(order5);
+            
+            return orders;
+        }
+
+        /// <summary>
+        /// Demonstrates advanced delegate usage with custom event handlers
+        /// </summary>
+        public static void DemoAdvancedDelegates()
+        {
+            Console.WriteLine("\n🎯 Advanced Delegate Demo");
+            Console.WriteLine("-" .PadRight(40, '-'));
+            
+            // Create custom delegate instances
+            OrderEventHandler orderHandler = (order, eventType) =>
+            {
+                Console.WriteLine($"🔔 Custom Handler: Order {order.OrderID} - {eventType}");
+            };
+            
+            PaymentEventHandler paymentHandler = (payment, success) =>
+            {
+                var status = success ? "SUCCESS" : "FAILED";
+                Console.WriteLine($"🔔 Custom Handler: Payment {status} - £{payment.GetAmount():F2}");
+            };
+            
+            // Create processing service
+            var processor = new OrderProcessingService();
+            
+            // Subscribe custom handlers
+            processor.OrderCreated += orderHandler;
+            processor.PaymentProcessed += (sender, e) => paymentHandler(e.Payment, e.Success);
+            
+            // Create and process order
+            var items = new List<Item>
+            {
+                new Item { Id = 1, Name = "Pepperoni Pizza", Price = 14.99 }
+            };
+            
+            var order = processor.CreateOrder(1, items);
+            
+            // Process payment
+            var payment = new Credit(); payment.SetAmount(14.99);
+            processor.ProcessPayment(payment);
+            
+            Console.WriteLine("✅ Advanced delegate demo completed!");
+        }
+
+        /// <summary>
+        /// Demonstrates LINQ with lambda expressions for data processing
+        /// </summary>
+        public static void DemoLINQWithLambda()
+        {
+            Console.WriteLine("\n🔍 LINQ with Lambda Expressions Demo");
+            Console.WriteLine("-" .PadRight(40, '-'));
+            
+            var orders = CreateSampleOrders();
+            
+            // Demonstrate various LINQ operations with lambda expressions
+            Console.WriteLine("📈 Order Analysis:");
+            
+            // Filter orders by status
+            var deliveredOrders = orders.Where(o => o.OrderStatus == "Delivered");
+            Console.WriteLine($"  Delivered orders: {deliveredOrders.Count()}");
+            
+            // Calculate average order value
+            var avgOrderValue = orders.Average(o => o.TotalAmount);
+            Console.WriteLine($"  Average order value: £{avgOrderValue:F2}");
+            
+            // Find highest value order
+            var highestOrder = orders.OrderByDescending(o => o.TotalAmount).First();
+            Console.WriteLine($"  Highest order: £{highestOrder.TotalAmount:F2} (ID: {highestOrder.OrderID})");
+            
+            // Group orders by customer
+            var ordersByCustomer = orders.GroupBy(o => o.CustomerID)
+                                       .Select(g => new { CustomerID = g.Key, Count = g.Count(), Total = g.Sum(o => o.TotalAmount) });
+            
+            Console.WriteLine("  Orders by customer:");
+            foreach (var customer in ordersByCustomer)
+            {
+                Console.WriteLine($"    Customer {customer.CustomerID}: {customer.Count} orders, £{customer.Total:F2} total");
+            }
+            
+            Console.WriteLine("✅ LINQ demo completed!");
+        }
+    }
+} 
