@@ -1,6 +1,19 @@
-# 🍕 Tasty Eats - Online Ordering System
+# 🍽️ Tasty Eats - Online Ordering System
 
-A comprehensive Windows Forms application for restaurant food ordering with MySQL database integration.
+A modern, feature-rich Windows Forms application for restaurant online ordering built with C# .NET 6.0. This project demonstrates advanced programming concepts, design patterns, and modern UI/UX principles.
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![.NET](https://img.shields.io/badge/.NET-6.0-purple.svg)
+![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)
+
+## 🚀 Recent Updates (v1.2)
+
+### ✅ Latest Changes
+- **Fixed Welcome Form**: All navigation buttons now display properly
+- **Updated Promotions**: "Live special offers only today 20%" banner
+- **Streamlined UI**: Removed Event Demo button for cleaner interface
+- **Login First**: Application now starts with authentication as intended
+- **Better Layout**: Improved button positioning and spacing
 
 ## 📋 Features
 
