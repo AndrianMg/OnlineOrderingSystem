@@ -7,15 +7,15 @@ namespace OnlineOrderingSystem.Models
     /// </summary>
     public abstract class Payment
     {
-        protected int PaymentID { get; set; }
-        protected int OrderID { get; set; }
-        protected int CustomerID { get; set; }
-        protected double Amount { get; set; }
-        protected string PaymentMethod { get; set; } = string.Empty;
-        protected string PaymentStatus { get; set; } = string.Empty;
-        protected DateTime PaymentDate { get; set; }
-        protected string PaymentDetails { get; set; } = string.Empty;
-        protected string TransactionID { get; set; } = string.Empty;
+        public int PaymentID { get; set; }
+        public int OrderID { get; set; }
+        public int CustomerID { get; set; }
+        public double Amount { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty;
+        public string PaymentStatus { get; set; } = string.Empty;
+        public DateTime PaymentDate { get; set; }
+        public string PaymentDetails { get; set; } = string.Empty;
+        public string TransactionID { get; set; } = string.Empty;
 
         /// <summary>
         /// Processes the payment

@@ -206,6 +206,8 @@ namespace OnlineOrderingSystem.Models
     /// </summary>
     public class OrderStatusUpdate
     {
+        public int Id { get; set; }
+        public int OrderID { get; set; }
         public string Status { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
         public DateTime Timestamp { get; set; }

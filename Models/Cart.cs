@@ -413,13 +413,21 @@ namespace OnlineOrderingSystem.Models
     /// </summary>
     public class CartItem
     {
+        public int CartID { get; set; }
+        public int ItemID { get; set; }
         public Item Item { get; set; }
         public int Quantity { get; set; }
-        public double TotalPrice => Item.Price * Quantity;
+        public double TotalPrice => Item?.Price * Quantity ?? 0;
+
+        public CartItem()
+        {
+            Item = new Item();
+        }
 
         public CartItem(Item item, int quantity)
         {
             Item = item;
+            ItemID = item.Id;
             Quantity = quantity;
         }
     }

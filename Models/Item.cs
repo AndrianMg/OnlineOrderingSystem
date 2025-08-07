@@ -380,12 +380,17 @@ namespace OnlineOrderingSystem.Models
     /// </summary>
     public class CustomizationOption
     {
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double AdditionalCost { get; set; }
         public bool IsRequired { get; set; }
         public List<string> Choices { get; set; } = new List<string>();
         public int MaxSelections { get; set; } = 1;
+
+        public CustomizationOption()
+        {
+        }
 
         public CustomizationOption(string name, double additionalCost = 0)
         {

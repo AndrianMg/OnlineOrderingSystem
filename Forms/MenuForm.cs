@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using OnlineOrderingSystem.Models;
+using OnlineOrderingSystem.Database;
 using System.Linq; // Added for .Select() and .Distinct()
 
 namespace OnlineOrderingSystem.Forms
@@ -20,10 +21,12 @@ namespace OnlineOrderingSystem.Forms
         private Label lblAlert;
         private Cart currentCart;
         private List<Item> allItems;
+        private MenuDataAccess menuDataAccess;
 
         public MenuForm()
         {
             InitializeComponent();
+            menuDataAccess = new MenuDataAccess();
             LoadMenuItems();
         }
 
@@ -209,68 +212,48 @@ namespace OnlineOrderingSystem.Forms
 
         private void LoadMenuItems()
         {
-            // Create sample menu items for Tasty Eats
-            allItems = new List<Item>
+            try
             {
-                // Starters
-                CreateMenuItem(1, "Garlic Bread", "Fresh baked garlic bread with herbs", 4.99, "Starters", true, 10, 4.5, new List<string> { "Vegetarian" }),
-                CreateMenuItem(2, "Bruschetta", "Toasted bread with tomatoes and basil", 5.99, "Starters", true, 8, 4.3, new List<string> { "Vegetarian", "Gluten-Free" }),
-                CreateMenuItem(3, "Chicken Wings", "Crispy wings with your choice of sauce", 8.99, "Starters", true, 15, 4.7, new List<string> { "Spicy" }),
+                // Load items from database
+                allItems = menuDataAccess.GetAvailableMenuItems();
+                
+                if (allItems == null || allItems.Count == 0)
+                {
+                    // If no items found, show an error message
+                    ShowAlert("No menu items found in database. Please check database connection.", true);
+                    allItems = new List<Item>(); // Initialize empty list to prevent crashes
+                    return;
+                }
 
-                // Main Courses
-                CreateMenuItem(4, "Margherita Pizza", "Classic tomato and mozzarella", 12.99, "Main Courses", true, 20, 4.6, new List<string> { "Vegetarian" }),
-                CreateMenuItem(5, "Pepperoni Pizza", "Spicy pepperoni with cheese", 14.99, "Main Courses", true, 20, 4.8, new List<string> { "Spicy" }),
-                CreateMenuItem(6, "Chicken Caesar Salad", "Fresh lettuce with grilled chicken", 11.99, "Main Courses", true, 12, 4.4, new List<string> { "Healthy" }),
-                CreateMenuItem(7, "Beef Burger", "Juicy beef burger with fries", 13.99, "Main Courses", true, 18, 4.7, new List<string> { "Popular" }),
-                CreateMenuItem(8, "Fish & Chips", "Crispy battered cod with chips", 15.99, "Main Courses", true, 25, 4.5, new List<string> { "British Classic" }),
+                // Add customizations to some items (this could also be stored in DB)
+                AddCustomizations();
 
-                // Desserts
-                CreateMenuItem(9, "Chocolate Cake", "Rich chocolate cake with cream", 6.99, "Desserts", true, 10, 4.6, new List<string> { "Vegetarian" }),
-                CreateMenuItem(10, "Ice Cream", "Vanilla ice cream with toppings", 4.99, "Desserts", true, 5, 4.3, new List<string> { "Vegetarian" }),
+                // Populate category dropdown
+                var categories = allItems.Select(i => i.Category).Distinct().OrderBy(c => c).ToList();
+                cmbCategory.Items.Clear();
+                cmbCategory.Items.Add("All Categories");
+                cmbCategory.Items.AddRange(categories.ToArray());
+                cmbCategory.SelectedIndex = 0;
 
-                // Drinks
-                CreateMenuItem(11, "Soft Drinks", "Coca-Cola, Sprite, Fanta", 2.99, "Drinks", true, 2, 4.2, new List<string> { "Vegetarian" }),
-                CreateMenuItem(12, "Coffee", "Fresh brewed coffee", 3.50, "Drinks", true, 3, 4.4, new List<string> { "Vegetarian" }),
-                CreateMenuItem(13, "Tea", "English breakfast tea", 2.50, "Drinks", true, 2, 4.1, new List<string> { "Vegetarian" })
-            };
+                // Display all items initially
+                DisplayItems(allItems);
 
-            // Add customizations to some items
-            AddCustomizations();
-
-            // Populate category dropdown
-            var categories = allItems.Select(i => i.Category).Distinct().ToList();
-            cmbCategory.Items.Add("All Categories");
-            cmbCategory.Items.AddRange(categories.ToArray());
-            cmbCategory.SelectedIndex = 0;
-
-            // Display all items initially
-            DisplayItems(allItems);
-        }
-
-        private Item CreateMenuItem(int id, string name, string description, double price, string category, bool available, int prepTime, double rating, List<string> dietaryTags)
-        {
-            var item = new Item
-            {
-                ItemID = id,
-                Name = name,
-                Description = description,
-                Price = price,
-                Category = category,
-                Availability = available,
-                PreparationTime = prepTime,
-                Rating = rating,
-                ReviewCount = (int)(rating * 20), // Simulate review count
-                IsPopular = rating >= 4.5,
-                IsChefSpecial = rating >= 4.7
-            };
-
-            foreach (var tag in dietaryTags)
-            {
-                item.AddDietaryTag(tag);
+                // Show success message
+                ShowAlert($"Loaded {allItems.Count} menu items from database successfully!", false);
             }
-
-            return item;
+            catch (Exception ex)
+            {
+                // Handle database connection errors
+                ShowAlert($"Error loading menu items: {ex.Message}", true);
+                allItems = new List<Item>(); // Initialize empty list to prevent crashes
+                
+                // Log the error (in a real app, you'd use a logging framework)
+                Console.WriteLine($"MenuForm LoadMenuItems Error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            }
         }
+
+        // Removed CreateMenuItem method - now loading from database
 
         private void AddCustomizations()
         {
@@ -303,9 +286,12 @@ namespace OnlineOrderingSystem.Forms
                     displayText += " ⭐";
                 if (item.IsChefSpecial)
                     displayText += " 👨‍🍳";
-                if (item.DietaryTags.Count > 0)
+                if (item.DietaryTags != null && item.DietaryTags.Count > 0)
                     displayText += $" ({string.Join(", ", item.DietaryTags)})";
                 displayText += $" - {item.Rating:F1}★ ({item.ReviewCount} reviews)";
+                
+                // Add preparation time and calories info
+                displayText += $" | {item.PrepTime}min | {item.Calories}cal";
 
                 lstMenu.Items.Add(displayText);
             }
@@ -452,7 +438,8 @@ namespace OnlineOrderingSystem.Forms
 
         private void MenuForm_Load(object sender, EventArgs e)
         {
-
+            CreateControls();
+            SetupEventHandlers();
         }
     }
 } 
