@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using OnlineOrderingSystem.Models;
+using OnlineOrderingSystem.Database;
 using System.Linq;
 
 namespace OnlineOrderingSystem.Forms
@@ -30,6 +31,7 @@ namespace OnlineOrderingSystem.Forms
         private List<Item> allItems;
         private List<Item> filteredItems;
         private Dictionary<string, List<Item>> itemsByCategory;
+        private MenuDataAccess menuDataAccess;
 
         // Color scheme
         private Color primaryBlue = Color.FromArgb(52, 152, 219);
@@ -45,6 +47,7 @@ namespace OnlineOrderingSystem.Forms
         public EnhancedMenuForm()
         {
             InitializeComponent();
+            menuDataAccess = new MenuDataAccess();
             LoadMenuItems();
         }
 
@@ -359,8 +362,29 @@ namespace OnlineOrderingSystem.Forms
             allItems = new List<Item>();
             itemsByCategory = new Dictionary<string, List<Item>>();
 
-            // Load sample data (original logic)
-            LoadSampleData();
+            try
+            {
+                // Load items from database
+                allItems = menuDataAccess.GetAvailableMenuItems();
+                
+                if (allItems == null || allItems.Count == 0)
+                {
+                    // If no items found in database, fall back to sample data
+                    LoadSampleData();
+                    Console.WriteLine("No items found in database. Using sample data.");
+                }
+                else
+                {
+                    // Alert will be shown after form is loaded
+                    Console.WriteLine($"Loaded {allItems.Count} items from database successfully!");
+                }
+            }
+            catch (Exception ex)
+            {
+                // If database connection fails, fall back to sample data
+                LoadSampleData();
+                Console.WriteLine($"Database connection failed: {ex.Message}. Using sample data.");
+            }
 
             // Group items by category for filtering
             foreach (var item in allItems)

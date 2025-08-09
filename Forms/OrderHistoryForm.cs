@@ -23,7 +23,7 @@ namespace OnlineOrderingSystem.Forms
         private void InitializeComponent()
         {
             this.Text = "Order History - Tasty Eats";
-            this.Size = new Size(800, 700);
+            this.Size = new Size(830, 750);
             this.StartPosition = FormStartPosition.CenterParent;
             this.BackColor = Color.FromArgb(33, 33, 33);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -102,7 +102,7 @@ namespace OnlineOrderingSystem.Forms
             orderListPanel = new Panel
             {
                 Location = new Point(20, 140),
-                Size = new Size(760, 400),
+                Size = new Size(785, 400),
                 BackColor = Color.FromArgb(40, 40, 40),
                 AutoScroll = true
             };
@@ -111,7 +111,7 @@ namespace OnlineOrderingSystem.Forms
             var summaryPanel = new Panel
             {
                 Location = new Point(20, 560),
-                Size = new Size(760, 80),
+                Size = new Size(785, 80),
                 BackColor = Color.FromArgb(50, 50, 50)
             };
 

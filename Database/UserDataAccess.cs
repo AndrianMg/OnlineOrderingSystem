@@ -53,7 +53,7 @@ namespace OnlineOrderingSystem.Database
             {
                 return context.Customers
                     .Include(c => c.OrderHistory)
-                    .FirstOrDefault(c => c.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+                    .FirstOrDefault(c => c.Email==email);
             }
         }
 
