@@ -37,14 +37,14 @@ namespace OnlineOrderingSystem
         {
             try
             {
-                using (var context = new OrderingDbContext())
+                using (var context = new OrderingDbContextw())
                 {
                     // Ensure database is created
                     context.Database.EnsureCreated();
-                    
+
                     // Seed sample data
                     context.SeedDatabase();
-                    
+
                     Console.WriteLine("Database initialized successfully with sample data.");
                 }
 
