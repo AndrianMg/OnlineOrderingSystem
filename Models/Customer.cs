@@ -10,9 +10,14 @@ namespace OnlineOrderingSystem.Models
     public class Customer
     {
         public int CustomerID { get; set; }
-        public string Name { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Name => $"{FirstName} {LastName}".Trim();
         public string Email { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
+        public string Postcode { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
         public List<Order> OrderHistory { get; set; } = new List<Order>();
         public string PreferredPaymentMethod { get; set; } = string.Empty;
 

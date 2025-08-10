@@ -48,9 +48,13 @@ namespace OnlineOrderingSystem.Data
             modelBuilder.Entity<Customer>(entity =>
             {
                 entity.HasKey(e => e.CustomerID);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.LastName).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.PhoneNumber).HasMaxLength(20);
                 entity.Property(e => e.Address).HasMaxLength(250);
+                entity.Property(e => e.Postcode).HasMaxLength(20);
+                entity.Property(e => e.Password).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.PreferredPaymentMethod).HasMaxLength(50);
                 
                 // Configure navigation property
@@ -264,9 +268,9 @@ namespace OnlineOrderingSystem.Data
                 // Initialize sample customers
                 var sampleCustomers = new[]
                 {
-                    new Customer { Name = "John Doe", Email = "john@example.com", Address = "123 Main St, London, UK", PreferredPaymentMethod = "Credit" },
-                    new Customer { Name = "Jane Smith", Email = "jane@example.com", Address = "456 Oak Ave, Manchester, UK", PreferredPaymentMethod = "Cash" },
-                    new Customer { Name = "Mike Johnson", Email = "mike@example.com", Address = "789 Pine Rd, Birmingham, UK", PreferredPaymentMethod = "Credit" }
+                    new Customer { FirstName = "John", LastName = "Doe", Email = "john@example.com", Address = "123 Main St, London, UK", PreferredPaymentMethod = "Credit" },
+                    new Customer { FirstName = "Jane", LastName = "Smith", Email = "jane@example.com", Address = "456 Oak Ave, Manchester, UK", PreferredPaymentMethod = "Cash" },
+                    new Customer { FirstName = "Mike", LastName = "Johnson", Email = "mike@example.com", Address = "789 Pine Rd, Birmingham, UK", PreferredPaymentMethod = "Credit" }
                 };
 
                 Customers.AddRange(sampleCustomers);

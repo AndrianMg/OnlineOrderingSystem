@@ -15,8 +15,6 @@ namespace OnlineOrderingSystem
         /// The main entry point for the application.
         /// Initializes the application and starts the login form.
         /// </summary>
-        /// <param name="args">Command line arguments (not used in this application)</param>
-        [STAThread]
         static void Main(string[] args)
         {
             // Initialize the database and seed sample data
@@ -37,15 +35,21 @@ namespace OnlineOrderingSystem
         {
             try
             {
-                using (var context = new OrderingDbContextw())
+                using (var context = new OrderingDbContext())
                 {
-                    // Ensure database is created
+                    // Ensure database exists with current schema
                     context.Database.EnsureCreated();
 
-                    // Seed sample data
-                    context.SeedDatabase();
-
-                    Console.WriteLine("Database initialized successfully with sample data.");
+                    // Only seed if database is empty
+                    if (!context.Customers.Any())
+                    {
+                        context.SeedDatabase();
+                        Console.WriteLine("Database seeded with sample data.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Database already contains data, skipping seed.");
+                    }
                 }
 
                 // Run database functionality test (optional - can be commented out for production)
