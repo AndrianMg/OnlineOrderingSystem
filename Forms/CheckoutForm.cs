@@ -2,12 +2,14 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using OnlineOrderingSystem.Models;
+using OnlineOrderingSystem.Database;
 
 namespace OnlineOrderingSystem.Forms
 {
     public class CheckoutForm : Form
     {
         private Cart cart;
+        private int customerId; // Add customer ID parameter
         private ComboBox cmbPaymentMethod;
         private TextBox txtDeliveryAddress;
         private TextBox txtSpecialInstructions;
@@ -22,9 +24,10 @@ namespace OnlineOrderingSystem.Forms
 
         public bool OrderPlaced { get; private set; } = false;
 
-        public CheckoutForm(Cart cart)
+        public CheckoutForm(Cart cart, int customerId = 1)
         {
             this.cart = cart;
+            this.customerId = customerId;
             InitializeComponent();
         }
 
@@ -300,7 +303,7 @@ namespace OnlineOrderingSystem.Forms
             {
                 // Create order
                 var order = new Order();
-                order.CreateOrder(1, cart); // Customer ID 1 for demo
+                order.CreateOrder(customerId, cart); // Use customerId
                 order.DeliveryAddress = txtDeliveryAddress.Text;
                 order.DeliveryInstructions = txtSpecialInstructions.Text;
                 order.IsDelivery = chkDelivery.Checked;
@@ -311,20 +314,51 @@ namespace OnlineOrderingSystem.Forms
                 var paymentMethod = cmbPaymentMethod.SelectedItem.ToString();
                 var total = double.Parse(lblTotal.Text.Split('£')[1]);
 
-                // Simulate payment processing
-                var payment = CreatePayment(paymentMethod, total);
-                var paymentSuccess = ProcessPayment(payment);
+                // Create payment object
+                Payment payment = null;
+                
+                // Handle credit/debit card payment method
+                if (paymentMethod.ToLower().Contains("card"))
+                {
+                    var cardForm = new CardDetailsForm(total);
+                    if (cardForm.ShowDialog() == DialogResult.OK)
+                    {
+                        payment = cardForm.CardDetails;
+                        payment.SetAmount(total);
+                    }
+                    else
+                    {
+                        // User cancelled card details entry
+                        ShowAlert("Payment cancelled. Please try again.", true);
+                        return;
+                    }
+                }
+                else
+                {
+                    // For other payment methods, create payment directly
+                    payment = CreatePayment(paymentMethod, total);
+                }
 
-                if (paymentSuccess)
+                if (payment == null)
+                {
+                    ShowAlert("Failed to create payment. Please try again.", true);
+                    return;
+                }
+
+                // Save order and payment to database
+                var orderDataAccess = new OrderDataAccess();
+                var savedOrder = orderDataAccess.CreateOrderWithPayment(order, payment);
+
+                if (savedOrder != null)
                 {
                     OrderPlaced = true;
                     ShowAlert("Order placed successfully! Your order is being prepared.", false);
                     
                     // Show order confirmation
-                    var confirmationMessage = $"Order #{order.OrderID} placed successfully!\n\n" +
+                    var confirmationMessage = $"Order #{savedOrder.OrderID} placed successfully!\n\n" +
                                            $"Total: £{total:F2}\n" +
                                            $"Payment Method: {paymentMethod}\n" +
-                                           $"Estimated Delivery: {order.EstimatedDeliveryTime:HH:mm}\n\n" +
+                                           $"Estimated Delivery: {savedOrder.EstimatedDeliveryTime:HH:mm}\n\n" +
                                            "Thank you for choosing Tasty Eats!";
                     
                     MessageBox.Show(confirmationMessage, "Order Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -332,7 +366,7 @@ namespace OnlineOrderingSystem.Forms
                 }
                 else
                 {
-                    ShowAlert("Payment failed. Please try again.", true);
+                    ShowAlert("Failed to save order to database. Please try again.", true);
                 }
             }
             catch (Exception ex)
@@ -347,11 +381,6 @@ namespace OnlineOrderingSystem.Forms
             {
                 case "cash on delivery":
                     return new Cash { AmountTendered = amount + 10, TotalAmount = amount };
-                case "credit card":
-                case "debit card":
-                    var credit = new Credit { CardNumber = "1234567890123456", CardHolderName = "Test User", ExpiryDate = DateTime.Now.AddYears(1), CVV = 123 };
-                    credit.SetAmount(amount);
-                    return credit;
                 case "paypal":
                     var check = new Check { ChequeNumber = "PAYPAL123", BankName = "PayPal" };
                     check.SetAmount(amount);

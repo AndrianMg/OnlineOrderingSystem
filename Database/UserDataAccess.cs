@@ -43,6 +43,24 @@ namespace OnlineOrderingSystem.Database
         }
 
         /// <summary>
+        /// Authenticates a customer by email and password
+        /// </summary>
+        /// <param name="email">The email address</param>
+        /// <param name="password">The password</param>
+        /// <returns>The authenticated customer or null if authentication fails</returns>
+        public Customer? AuthenticateCustomer(string email, string password)
+        {
+            using (var context = new OrderingDbContext())
+            {
+                var customer = context.Customers
+                    .Include(c => c.OrderHistory)
+                    .FirstOrDefault(c => c.Email == email && c.Password == password);
+                
+                return customer;
+            }
+        }
+
+        /// <summary>
         /// Retrieves a customer by email address
         /// </summary>
         /// <param name="email">The email address</param>

@@ -33,6 +33,9 @@ namespace OnlineOrderingSystem
                 // Test order data access
                 TestOrderDataAccess();
 
+                // Test payment data access
+                TestPaymentDataAccess();
+
                 Console.WriteLine("=== All tests completed successfully! ===");
             }
             catch (Exception ex)
@@ -206,6 +209,102 @@ namespace OnlineOrderingSystem
             }
             
             Console.WriteLine("   ✓ Order data access tests passed");
+            Console.WriteLine();
+        }
+
+        /// <summary>
+        /// Tests payment data access operations
+        /// </summary>
+        private static void TestPaymentDataAccess()
+        {
+            Console.WriteLine("5. Testing Payment Data Access...");
+            
+            var paymentDataAccess = new PaymentDataAccess();
+            var orderDataAccess = new OrderDataAccess();
+            var userDataAccess = new UserDataAccess();
+            var menuDataAccess = new MenuDataAccess();
+            
+            // Get test data
+            var customers = userDataAccess.GetAllCustomers();
+            var items = menuDataAccess.GetAllMenuItems();
+            
+            if (customers.Any() && items.Any())
+            {
+                // Create a test order first
+                var testCustomer = customers.First();
+                var testItem = items.First();
+                
+                var testOrder = new Order();
+                var testCart = new Cart();
+                testCart.AddItem(testItem, 2);
+                testOrder.CreateOrder(testCustomer.CustomerID, testCart);
+                testOrder.DeliveryAddress = testCustomer.Address;
+                testOrder.IsDelivery = true;
+                testOrder.DeliveryFee = 2.99;
+
+                // Save the order
+                var savedOrder = orderDataAccess.CreateOrder(testOrder);
+                Console.WriteLine($"   - Created test order #{savedOrder.OrderID} for payment testing");
+
+                // Test different payment methods
+                var paymentMethods = new[] { "Cash", "Credit", "Check" };
+                
+                foreach (var method in paymentMethods)
+                {
+                    Payment testPayment;
+                    switch (method.ToLower())
+                    {
+                        case "cash":
+                            testPayment = new Cash { AmountTendered = savedOrder.TotalAmount + 5, TotalAmount = savedOrder.TotalAmount };
+                            break;
+                        case "credit":
+                            testPayment = new Credit { CardNumber = "1234567890123456", CardHolderName = "Test User", ExpiryDate = DateTime.Now.AddYears(1), CVV = 123 };
+                            testPayment.SetAmount(savedOrder.TotalAmount);
+                            break;
+                        case "check":
+                            testPayment = new Check { ChequeNumber = "123456", BankName = "Test Bank" };
+                            testPayment.SetAmount(savedOrder.TotalAmount);
+                            break;
+                        default:
+                            continue;
+                    }
+
+                    // Create payment entity and save to database
+                    var paymentEntity = PaymentEntity.FromPayment(testPayment, savedOrder.OrderID, testCustomer.CustomerID);
+                    var savedPayment = paymentDataAccess.CreatePayment(paymentEntity);
+                    
+                    Console.WriteLine($"   - Created {method} payment: ID {savedPayment.PaymentID}, Amount £{savedPayment.Amount:F2}");
+                }
+
+                // Test payment retrieval
+                var orderPayments = paymentDataAccess.GetPaymentsByOrderId(savedOrder.OrderID);
+                Console.WriteLine($"   - Retrieved {orderPayments.Count} payments for order #{savedOrder.OrderID}");
+
+                var customerPayments = paymentDataAccess.GetPaymentsByCustomerId(testCustomer.CustomerID);
+                Console.WriteLine($"   - Retrieved {customerPayments.Count} payments for customer {testCustomer.Name}");
+
+                // Test payment statistics
+                var paymentStats = paymentDataAccess.GetPaymentStatistics(testCustomer.CustomerID);
+                Console.WriteLine($"   - Payment statistics: {paymentStats.totalPayments} payments, £{paymentStats.totalAmount:F2} total");
+
+                // Test payment history with orders
+                var paymentHistory = paymentDataAccess.GetPaymentHistoryWithOrders(testCustomer.CustomerID);
+                Console.WriteLine($"   - Payment history with orders: {paymentHistory.Count} records");
+
+                // Test payment status update
+                if (orderPayments.Any())
+                {
+                    var firstPayment = orderPayments.First();
+                    var statusUpdated = paymentDataAccess.UpdatePaymentStatus(firstPayment.PaymentID, "Completed");
+                    Console.WriteLine($"   - Payment status updated to 'Completed': {statusUpdated}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("   ⚠ No test data available for payment testing");
+            }
+            
+            Console.WriteLine("   ✓ Payment data access tests passed");
             Console.WriteLine();
         }
     }

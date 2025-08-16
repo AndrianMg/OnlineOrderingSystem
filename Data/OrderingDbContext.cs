@@ -12,12 +12,11 @@ namespace OnlineOrderingSystem.Data
     public class OrderingDbContext : DbContext
     {
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<Order> Orders { get; set; }
         public DbSet<Item> Items { get; set; }
-        public DbSet<Cart> Carts { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentEntity> PaymentEntities { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<CartItem> CartItems { get; set; }
         public DbSet<OrderStatusUpdate> OrderStatusUpdates { get; set; }
         public DbSet<CustomizationOption> CustomizationOptions { get; set; }
 
@@ -75,16 +74,9 @@ namespace OnlineOrderingSystem.Data
                 entity.Property(e => e.ImageURL).HasMaxLength(250);
                 entity.Property(e => e.AllergenInfo).HasMaxLength(250);
                 
-                // Configure lists as JSON columns (EF Core 7+) or separate tables for older versions
-                entity.Property(e => e.DietaryTags)
-                      .HasConversion(
-                          v => string.Join(',', v),
-                          v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
-                      
-                entity.Property(e => e.Ingredients)
-                      .HasConversion(
-                          v => string.Join(',', v),
-                          v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+                // Configure lists to be ignored by EF Core (not stored in database)
+                entity.Ignore(e => e.DietaryTags);
+                entity.Ignore(e => e.Ingredients);
             });
 
             // Configure Order entity
@@ -119,7 +111,7 @@ namespace OnlineOrderingSystem.Data
             modelBuilder.Entity<OrderDetail>(entity =>
             {
                 entity.HasKey(e => e.OrderDetailID);
-                entity.Property(e => e.ItemName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Quantity).IsRequired();
                 entity.Property(e => e.Price).HasColumnType("decimal(10,2)");
                 entity.Property(e => e.TotalPrice).HasColumnType("decimal(10,2)");
                 entity.Property(e => e.CustomizationCost).HasColumnType("decimal(10,2)");
@@ -127,62 +119,21 @@ namespace OnlineOrderingSystem.Data
                 entity.Property(e => e.DietaryNotes).HasMaxLength(250);
                 entity.Property(e => e.AllergenInfo).HasMaxLength(250);
                 
-                entity.Property(e => e.Customizations)
-                      .HasConversion(
-                          v => string.Join(',', v),
-                          v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
-            });
-
-            // Configure Cart entity
-            modelBuilder.Entity<Cart>(entity =>
-            {
-                entity.HasKey(e => e.CartID);
-                entity.Property(e => e.TotalAmount).HasColumnType("decimal(10,2)");
-                
-                entity.HasMany(c => c.Items)
-                      .WithOne()
-                      .HasForeignKey("CartID")
-                      .OnDelete(DeleteBehavior.Cascade);
-            });
-
-            // Configure CartItem entity
-            modelBuilder.Entity<CartItem>(entity =>
-            {
-                entity.HasKey(e => new { e.CartID, e.ItemID });
-                entity.Property(e => e.CartID);
-                entity.Property(e => e.ItemID);
-                entity.Property(e => e.Quantity);
-                
-                entity.HasOne(ci => ci.Item)
-                      .WithMany()
-                      .HasForeignKey(ci => ci.ItemID)
-                      .OnDelete(DeleteBehavior.Restrict);
+                // Configure Customizations to be ignored by EF Core (not stored in database)
+                entity.Ignore(e => e.Customizations);
             });
 
             // Configure OrderStatusUpdate entity
             modelBuilder.Entity<OrderStatusUpdate>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Status).HasMaxLength(50);
                 entity.Property(e => e.Message).HasMaxLength(500);
+                entity.Property(e => e.Timestamp).IsRequired();
             });
 
-            // Configure CustomizationOption entity
-            modelBuilder.Entity<CustomizationOption>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Description).HasMaxLength(250);
-                entity.Property(e => e.AdditionalCost).HasColumnType("decimal(10,2)");
-                
-                entity.Property(e => e.Choices)
-                      .HasConversion(
-                          v => string.Join(',', v),
-                          v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
-            });
-
-            // Configure Payment entity hierarchy (Table per Hierarchy)
-            modelBuilder.Entity<Payment>(entity =>
+            // Configure PaymentEntity for database storage
+            modelBuilder.Entity<PaymentEntity>(entity =>
             {
                 entity.HasKey(e => e.PaymentID);
                 entity.Property(e => e.Amount).HasColumnType("decimal(10,2)");
@@ -190,12 +141,35 @@ namespace OnlineOrderingSystem.Data
                 entity.Property(e => e.PaymentStatus).HasMaxLength(50);
                 entity.Property(e => e.PaymentDetails).HasMaxLength(500);
                 entity.Property(e => e.TransactionID).HasMaxLength(100);
+                entity.Property(e => e.CardNumber).HasMaxLength(20);
+                entity.Property(e => e.CardHolderName).HasMaxLength(100);
+                entity.Property(e => e.ChequeNumber).HasMaxLength(50);
+                entity.Property(e => e.BankName).HasMaxLength(100);
+                entity.Property(e => e.AmountTendered).HasColumnType("decimal(10,2)");
                 
-                // Use Table-per-Hierarchy (TPH) inheritance
-                entity.HasDiscriminator<string>("PaymentType")
-                      .HasValue<Cash>("Cash")
-                      .HasValue<Credit>("Credit")
-                      .HasValue<Check>("Check");
+                // Configure relationships
+                entity.HasOne<Order>()
+                      .WithMany()
+                      .HasForeignKey(p => p.OrderID)
+                      .OnDelete(DeleteBehavior.Cascade);
+                      
+                entity.HasOne<Customer>()
+                      .WithMany()
+                      .HasForeignKey(p => p.CustomerID)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Configure CustomizationOption entity to ignore List<string> properties
+            modelBuilder.Entity<CustomizationOption>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).HasMaxLength(100);
+                entity.Property(e => e.Description).HasMaxLength(500);
+                entity.Property(e => e.AdditionalCost).HasColumnType("decimal(10,2)");
+                entity.Property(e => e.MaxSelections).IsRequired();
+                
+                // Ignore the List<string> Choices property to prevent database mapping issues
+                entity.Ignore(e => e.Choices);
             });
 
             // Configure derived payment types
@@ -217,8 +191,6 @@ namespace OnlineOrderingSystem.Data
                 entity.Property(e => e.ChequeNumber).HasMaxLength(20);
                 entity.Property(e => e.BankName).HasMaxLength(100);
             });
-
-            base.OnModelCreating(modelBuilder);
         }
 
         /// <summary>
@@ -276,12 +248,8 @@ namespace OnlineOrderingSystem.Data
                 Customers.AddRange(sampleCustomers);
             }
 
-            if (!Carts.Any())
-            {
-                // Note: Can't create carts without customer IDs from database
-                // Sample carts will be created when customers place orders
-                // This section is left empty for now
-            }
+            // Note: Carts are not persisted to database - they are created in memory when needed
+            // Sample carts will be created when customers place orders
 
             SaveChanges();
         }

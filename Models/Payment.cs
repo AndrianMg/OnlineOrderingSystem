@@ -78,12 +78,76 @@ namespace OnlineOrderingSystem.Models
         }
 
         /// <summary>
-        /// Gets the payment status
-        /// </summary>
+        /// Gets the payment status</summary>
         /// <returns>The payment status</returns>
         public string GetPaymentStatus()
         {
             return PaymentStatus;
+        }
+    }
+
+    /// <summary>
+    /// Concrete payment entity for database storage
+    /// </summary>
+    public class PaymentEntity
+    {
+        public int PaymentID { get; set; }
+        public int OrderID { get; set; }
+        public int CustomerID { get; set; }
+        public double Amount { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty;
+        public string PaymentStatus { get; set; } = string.Empty;
+        public DateTime PaymentDate { get; set; }
+        public string PaymentDetails { get; set; } = string.Empty;
+        public string TransactionID { get; set; } = string.Empty;
+        public string CardNumber { get; set; } = string.Empty;
+        public string CardHolderName { get; set; } = string.Empty;
+        public DateTime? ExpiryDate { get; set; }
+        public int? CVV { get; set; }
+        public string ChequeNumber { get; set; } = string.Empty;
+        public string BankName { get; set; } = string.Empty;
+        public double AmountTendered { get; set; }
+
+        /// <summary>
+        /// Creates a PaymentEntity from a Payment object
+        /// </summary>
+        /// <param name="payment">The payment object</param>
+        /// <param name="orderId">The order ID</param>
+        /// <param name="customerId">The customer ID</param>
+        /// <returns>A new PaymentEntity</returns>
+        public static PaymentEntity FromPayment(Payment payment, int orderId, int customerId)
+        {
+            var entity = new PaymentEntity
+            {
+                OrderID = orderId,
+                CustomerID = customerId,
+                Amount = payment.Amount,
+                PaymentMethod = payment.PaymentMethod,
+                PaymentStatus = payment.PaymentStatus,
+                PaymentDate = DateTime.Now,
+                TransactionID = Guid.NewGuid().ToString("N")[..16].ToUpper(),
+                PaymentDetails = payment.GetPaymentDetails()
+            };
+
+            // Set specific payment method details
+            switch (payment)
+            {
+                case Credit credit:
+                    entity.CardNumber = credit.CardNumber;
+                    entity.CardHolderName = credit.CardHolderName;
+                    entity.ExpiryDate = credit.ExpiryDate;
+                    entity.CVV = credit.CVV;
+                    break;
+                case Check check:
+                    entity.ChequeNumber = check.ChequeNumber;
+                    entity.BankName = check.BankName;
+                    break;
+                case Cash cash:
+                    entity.AmountTendered = cash.AmountTendered;
+                    break;
+            }
+
+            return entity;
         }
     }
 } 

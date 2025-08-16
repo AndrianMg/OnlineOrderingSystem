@@ -1,469 +1,272 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
+using OnlineOrderingSystem.Models;
+using OnlineOrderingSystem.Database;
 using System.Linq; // Added for Sum()
 
 namespace OnlineOrderingSystem.Forms
 {
     public class OrderHistoryForm : Form
     {
-        private List<OrderHistoryItem> orderHistory;
-        private Panel orderListPanel;
-        private Label totalOrdersLabel;
-        private Label totalSpentLabel;
-        private Label loyaltyLabel;
+        private int customerId;
+        private ListBox lstOrderHistory;
+        private ListBox lstOrderDetails;
+        private Button btnRefresh;
+        private Button btnBack;
+        private Label lblTitle;
+        private Label lblOrderHistory;
+        private Label lblOrderDetails;
 
-        public OrderHistoryForm()
+        public OrderHistoryForm(int customerId = 1)
         {
+            this.customerId = customerId;
             InitializeComponent();
             LoadOrderHistory();
         }
 
         private void InitializeComponent()
         {
-            this.Text = "Order History - Tasty Eats";
-            this.Size = new Size(830, 750);
-            this.StartPosition = FormStartPosition.CenterParent;
+            this.Text = "Tasty Eats - Order History";
+            this.Size = new Size(1000, 700);
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.FromArgb(33, 33, 33);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
 
             CreateControls();
+            SetupEventHandlers();
         }
 
         private void CreateControls()
         {
-            // Header
-            var lblHeader = new Label
+            // Title
+            lblTitle = new Label
             {
                 Text = "📋 Order History",
-                Font = new Font("Arial", 18, FontStyle.Bold),
+                Font = new Font("Arial", 24, FontStyle.Bold),
                 ForeColor = Color.White,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Location = new Point(20, 20),
-                Size = new Size(760, 40)
+                Location = new Point(50, 30),
+                Size = new Size(900, 40)
             };
 
-            // Filter Panel
-            var filterPanel = new Panel
+            // Order History Section
+            lblOrderHistory = new Label
             {
-                Location = new Point(20, 70),
-                Size = new Size(760, 50),
-                BackColor = Color.FromArgb(50, 50, 50)
-            };
-
-            var lblFilter = new Label
-            {
-                Text = "Filter by Status:",
-                Font = new Font("Arial", 10),
-                ForeColor = Color.White,
-                Location = new Point(10, 15),
-                Size = new Size(100, 20)
-            };
-
-            var cmbFilter = new ComboBox
-            {
-                Location = new Point(120, 12),
-                Size = new Size(120, 25),
-                DropDownStyle = ComboBoxStyle.DropDownList
-            };
-            cmbFilter.Items.AddRange(new object[] { "All Orders", "Delivered", "In Progress", "Preparing" });
-            cmbFilter.SelectedIndex = 0;
-            cmbFilter.SelectedIndexChanged += (s, e) => FilterOrders();
-
-            var btnExport = new Button
-            {
-                Text = "📄 Export PDF",
-                Font = new Font("Arial", 9),
-                ForeColor = Color.White,
-                BackColor = Color.FromArgb(70, 130, 180),
-                Location = new Point(260, 12),
-                Size = new Size(100, 25),
-                FlatStyle = FlatStyle.Flat
-            };
-            btnExport.Click += (s, e) => ExportToPDF();
-
-            var btnPrint = new Button
-            {
-                Text = "🖨️ Print",
-                Font = new Font("Arial", 9),
-                ForeColor = Color.White,
-                BackColor = Color.FromArgb(70, 130, 180),
-                Location = new Point(370, 12),
-                Size = new Size(80, 25),
-                FlatStyle = FlatStyle.Flat
-            };
-            btnPrint.Click += (s, e) => PrintHistory();
-
-            filterPanel.Controls.AddRange(new Control[] { lblFilter, cmbFilter, btnExport, btnPrint });
-
-            // Order List Panel (Scrollable)
-            orderListPanel = new Panel
-            {
-                Location = new Point(20, 140),
-                Size = new Size(785, 400),
-                BackColor = Color.FromArgb(40, 40, 40),
-                AutoScroll = true
-            };
-
-            // Summary Panel
-            var summaryPanel = new Panel
-            {
-                Location = new Point(20, 560),
-                Size = new Size(785, 80),
-                BackColor = Color.FromArgb(50, 50, 50)
-            };
-
-            totalOrdersLabel = new Label
-            {
-                Text = "📊 Total Orders: 0",
-                Font = new Font("Arial", 12, FontStyle.Bold),
-                ForeColor = Color.White,
-                Location = new Point(20, 15),
+                Text = "Your Orders:",
+                Font = new Font("Arial", 14, FontStyle.Bold),
+                ForeColor = Color.FromArgb(0, 150, 255),
+                Location = new Point(50, 90),
                 Size = new Size(200, 25)
             };
 
-            totalSpentLabel = new Label
+            lstOrderHistory = new ListBox
             {
-                Text = "💰 Total Spent: £0.00",
-                Font = new Font("Arial", 12, FontStyle.Bold),
+                Location = new Point(50, 120),
+                Size = new Size(400, 400),
+                BackColor = Color.FromArgb(50, 50, 50),
                 ForeColor = Color.White,
-                Location = new Point(20, 45),
+                Font = new Font("Arial", 11)
+            };
+
+            // Order Details Section
+            lblOrderDetails = new Label
+            {
+                Text = "Order Details:",
+                Font = new Font("Arial", 14, FontStyle.Bold),
+                ForeColor = Color.FromArgb(0, 150, 255),
+                Location = new Point(500, 90),
                 Size = new Size(200, 25)
             };
 
-            loyaltyLabel = new Label
+            lstOrderDetails = new ListBox
             {
-                Text = "🎁 Loyalty Rewards: You've saved £5.20 this month!",
-                Font = new Font("Arial", 10),
-                ForeColor = Color.FromArgb(255, 215, 0),
-                Location = new Point(250, 15),
-                Size = new Size(500, 25)
+                Location = new Point(500, 120),
+                Size = new Size(400, 400),
+                BackColor = Color.FromArgb(50, 50, 50),
+                ForeColor = Color.White,
+                Font = new Font("Arial", 11)
             };
 
-            summaryPanel.Controls.AddRange(new Control[] { totalOrdersLabel, totalSpentLabel, loyaltyLabel });
-
-            // Close Button
-            var btnClose = new Button
+            // Buttons
+            btnRefresh = new Button
             {
-                Text = "Close",
-                Font = new Font("Arial", 12),
+                Text = "🔄 Refresh",
+                Font = new Font("Arial", 12, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(0, 150, 255),
+                Location = new Point(50, 540),
+                Size = new Size(120, 40),
+                FlatStyle = FlatStyle.Flat
+            };
+
+            btnBack = new Button
+            {
+                Text = "← Back",
+                Font = new Font("Arial", 12, FontStyle.Bold),
                 ForeColor = Color.White,
                 BackColor = Color.FromArgb(100, 100, 100),
-                Location = new Point(350, 650),
-                Size = new Size(100, 35),
+                Location = new Point(200, 540),
+                Size = new Size(120, 40),
                 FlatStyle = FlatStyle.Flat
             };
-            btnClose.Click += (s, e) => this.Close();
 
+            // Add controls to form
             this.Controls.AddRange(new Control[] {
-                lblHeader, filterPanel, orderListPanel, summaryPanel, btnClose
+                lblTitle, lblOrderHistory, lstOrderHistory,
+                lblOrderDetails, lstOrderDetails, btnRefresh, btnBack
             });
+        }
+
+        private void SetupEventHandlers()
+        {
+            btnRefresh.Click += BtnRefresh_Click;
+            btnBack.Click += BtnBack_Click;
+            lstOrderHistory.SelectedIndexChanged += LstOrderHistory_SelectedIndexChanged;
         }
 
         private void LoadOrderHistory()
         {
-            // Simulate order history data
-            orderHistory = new List<OrderHistoryItem>
+            try
             {
-                new OrderHistoryItem
+                var orderDataAccess = new OrderDataAccess();
+                var orderHistory = orderDataAccess.GetOrderHistoryWithPayments(customerId);
+
+                lstOrderHistory.Items.Clear();
+                lstOrderDetails.Items.Clear();
+
+                if (orderHistory.Count == 0)
                 {
-                    OrderNumber = "001",
-                    Amount = 25.47m,
-                    Status = "Delivered",
-                    ItemCount = 2,
-                    OrderDate = DateTime.Now.AddDays(-3),
-                    Items = new List<string> { "Chicken Wrap", "French Fries" },
-                    EstimatedDelivery = null
-                },
-                new OrderHistoryItem
-                {
-                    OrderNumber = "002",
-                    Amount = 18.99m,
-                    Status = "In Progress",
-                    ItemCount = 3,
-                    OrderDate = DateTime.Now.AddDays(-1),
-                    Items = new List<string> { "Margherita Pizza", "Caesar Salad", "Coke" },
-                    EstimatedDelivery = DateTime.Now.AddMinutes(25)
-                },
-                new OrderHistoryItem
-                {
-                    OrderNumber = "003",
-                    Amount = 32.50m,
-                    Status = "Preparing",
-                    ItemCount = 4,
-                    OrderDate = DateTime.Now.AddHours(-2),
-                    Items = new List<string> { "Pepperoni Pizza", "Garlic Bread", "Chicken Wings", "Sprite" },
-                    EstimatedDelivery = DateTime.Now.AddMinutes(45)
-                },
-                new OrderHistoryItem
-                {
-                    OrderNumber = "004",
-                    Amount = 15.75m,
-                    Status = "Delivered",
-                    ItemCount = 2,
-                    OrderDate = DateTime.Now.AddDays(-5),
-                    Items = new List<string> { "Veggie Burger", "Onion Rings" },
-                    EstimatedDelivery = null
+                    lstOrderHistory.Items.Add("No orders found. Start ordering to see your history here!");
+                    return;
                 }
-            };
 
-            DisplayOrders(orderHistory);
-            UpdateSummary();
-        }
-
-        private void DisplayOrders(List<OrderHistoryItem> orders)
-        {
-            orderListPanel.Controls.Clear();
-            int yPosition = 10;
-
-            foreach (var order in orders)
-            {
-                var orderPanel = CreateOrderPanel(order, yPosition);
-                orderListPanel.Controls.Add(orderPanel);
-                yPosition += 120;
-            }
-        }
-
-        private Panel CreateOrderPanel(OrderHistoryItem order, int yPosition)
-        {
-            var panel = new Panel
-            {
-                Location = new Point(10, yPosition),
-                Size = new Size(740, 110),
-                BackColor = Color.FromArgb(60, 60, 60),
-                BorderStyle = BorderStyle.FixedSingle
-            };
-
-            // Status icon and color
-            string statusIcon = GetStatusIcon(order.Status);
-            Color statusColor = GetStatusColor(order.Status);
-
-            var lblStatus = new Label
-            {
-                Text = $"{statusIcon} {order.Status}",
-                Font = new Font("Arial", 10, FontStyle.Bold),
-                ForeColor = statusColor,
-                Location = new Point(15, 10),
-                Size = new Size(150, 20)
-            };
-
-            // Order number and date
-            var lblOrderInfo = new Label
-            {
-                Text = $"📋 Order #{order.OrderNumber} • {order.OrderDate:MMM dd, yyyy}",
-                Font = new Font("Arial", 11, FontStyle.Bold),
-                ForeColor = Color.White,
-                Location = new Point(15, 35),
-                Size = new Size(300, 20)
-            };
-
-            // Amount
-            var lblAmount = new Label
-            {
-                Text = $"💰 £{order.Amount:F2}",
-                Font = new Font("Arial", 12, FontStyle.Bold),
-                ForeColor = Color.FromArgb(255, 215, 0),
-                Location = new Point(320, 35),
-                Size = new Size(100, 20)
-            };
-
-            // Items preview
-            var itemsText = string.Join(", ", order.Items);
-            var lblItems = new Label
-            {
-                Text = $"🍽️ {itemsText}",
-                Font = new Font("Arial", 9),
-                ForeColor = Color.LightGray,
-                Location = new Point(15, 60),
-                Size = new Size(500, 20)
-            };
-
-            // Item count
-            var lblItemCount = new Label
-            {
-                Text = $"📦 {order.ItemCount} items",
-                Font = new Font("Arial", 9),
-                ForeColor = Color.LightGray,
-                Location = new Point(15, 80),
-                Size = new Size(100, 20)
-            };
-
-            // Estimated delivery (for non-delivered orders)
-            if (order.EstimatedDelivery.HasValue)
-            {
-                var timeRemaining = order.EstimatedDelivery.Value - DateTime.Now;
-                var lblDelivery = new Label
+                foreach (var orderWithPayment in orderHistory)
                 {
-                    Text = $"⏰ Est. Delivery: {order.EstimatedDelivery.Value:HH:mm} ({timeRemaining.Minutes} min remaining)",
-                    Font = new Font("Arial", 9),
-                    ForeColor = Color.FromArgb(255, 165, 0),
-                    Location = new Point(120, 80),
-                    Size = new Size(300, 20)
-                };
-                panel.Controls.Add(lblDelivery);
-            }
+                    var order = orderWithPayment.Order;
+                    var payment = orderWithPayment.Payment;
+                    
+                    var orderSummary = $"Order #{order.OrderID} - {order.OrderDate:dd/MM/yyyy HH:mm}";
+                    var status = $"Status: {order.OrderStatus} | Payment: {order.PaymentStatus}";
+                    var total = $"Total: £{order.TotalAmount:F2}";
+                    
+                    var displayText = $"{orderSummary}\n{status}\n{total}";
+                    if (payment != null)
+                    {
+                        displayText += $"\nPayment: {payment.PaymentMethod} - {payment.TransactionID}";
+                    }
+                    
+                    lstOrderHistory.Items.Add(displayText);
+                }
 
-            // Progress bar for non-delivered orders
-            if (order.Status != "Delivered")
+                // Show order statistics
+                var stats = orderDataAccess.GetOrderStatistics(customerId);
+                var statsText = $"📊 Order Statistics:\n" +
+                               $"Total Orders: {stats.totalOrders}\n" +
+                               $"Total Spent: £{stats.totalSpent:F2}\n" +
+                               $"Average Order: £{stats.averageOrderValue:F2}";
+                
+                lstOrderDetails.Items.Add(statsText);
+                lstOrderDetails.Items.Add(""); // Empty line
+                lstOrderDetails.Items.Add("Select an order from the left to view details.");
+            }
+            catch (Exception ex)
             {
-                var progressBar = new ProgressBar
+                MessageBox.Show($"Error loading order history: {ex.Message}", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LstOrderHistory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstOrderHistory.SelectedIndex >= 0)
+            {
+                try
                 {
-                    Location = new Point(430, 35),
-                    Size = new Size(150, 15),
-                    Style = ProgressBarStyle.Continuous
-                };
+                    var orderDataAccess = new OrderDataAccess();
+                    var orderHistory = orderDataAccess.GetOrderHistoryWithPayments(customerId);
+                    
+                    if (lstOrderHistory.SelectedIndex < orderHistory.Count)
+                    {
+                        var selectedOrderWithPayment = orderHistory[lstOrderHistory.SelectedIndex];
+                        var order = selectedOrderWithPayment.Order;
+                        var payment = selectedOrderWithPayment.Payment;
 
-                int progress = order.Status switch
+                        lstOrderDetails.Items.Clear();
+
+                        // Order Details
+                        lstOrderDetails.Items.Add($"📋 Order #{order.OrderID}");
+                        lstOrderDetails.Items.Add($"Date: {order.OrderDate:dd/MM/yyyy HH:mm}");
+                        lstOrderDetails.Items.Add($"Status: {order.OrderStatus}");
+                        lstOrderDetails.Items.Add($"Payment Status: {order.PaymentStatus}");
+                        lstOrderDetails.Items.Add($"Delivery: {(order.IsDelivery ? "Yes" : "No")}");
+                        if (order.IsDelivery)
+                        {
+                            lstOrderDetails.Items.Add($"Address: {order.DeliveryAddress}");
+                            lstOrderDetails.Items.Add($"Estimated: {order.EstimatedDeliveryTime:HH:mm}");
+                        }
+                        lstOrderDetails.Items.Add("");
+
+                        // Order Items
+                        lstOrderDetails.Items.Add("🍽️ Order Items:");
+                        foreach (var item in order.OrderItems)
+                        {
+                            lstOrderDetails.Items.Add($"  {item.ItemName} x{item.Quantity} - £{item.TotalPrice:F2}");
+                        }
+                        lstOrderDetails.Items.Add("");
+
+                        // Totals
+                        lstOrderDetails.Items.Add($"Subtotal: £{order.Subtotal:F2}");
+                        lstOrderDetails.Items.Add($"Tax: £{order.TaxAmount:F2}");
+                        lstOrderDetails.Items.Add($"Delivery Fee: £{order.DeliveryFee:F2}");
+                        lstOrderDetails.Items.Add($"Total: £{order.TotalAmount:F2}");
+                        lstOrderDetails.Items.Add("");
+
+                        // Payment Details
+                        if (payment != null)
+                        {
+                            lstOrderDetails.Items.Add("💳 Payment Details:");
+                            lstOrderDetails.Items.Add($"  Method: {payment.PaymentMethod}");
+                            lstOrderDetails.Items.Add($"  Amount: £{payment.Amount:F2}");
+                            lstOrderDetails.Items.Add($"  Status: {payment.PaymentStatus}");
+                            lstOrderDetails.Items.Add($"  Transaction ID: {payment.TransactionID}");
+                            lstOrderDetails.Items.Add($"  Date: {payment.PaymentDate:dd/MM/yyyy HH:mm}");
+                        }
+
+                        // Status History
+                        if (order.StatusHistory.Any())
+                        {
+                            lstOrderDetails.Items.Add("");
+                            lstOrderDetails.Items.Add("📝 Status History:");
+                            foreach (var status in order.StatusHistory.OrderBy(s => s.Timestamp))
+                            {
+                                lstOrderDetails.Items.Add($"  {status.Timestamp:HH:mm} - {status.Status}");
+                                if (!string.IsNullOrEmpty(status.Message))
+                                {
+                                    lstOrderDetails.Items.Add($"    {status.Message}");
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
                 {
-                    "Preparing" => 25,
-                    "In Progress" => 75,
-                    _ => 0
-                };
-                progressBar.Value = progress;
-
-                var lblProgress = new Label
-                {
-                    Text = $"{progress}%",
-                    Font = new Font("Arial", 8),
-                    ForeColor = Color.White,
-                    Location = new Point(590, 35),
-                    Size = new Size(40, 15)
-                };
-
-                panel.Controls.Add(progressBar);
-                panel.Controls.Add(lblProgress);
+                    lstOrderDetails.Items.Clear();
+                    lstOrderDetails.Items.Add($"Error loading order details: {ex.Message}");
+                }
             }
-
-            // View Details button
-            var btnDetails = new Button
-            {
-                Text = "👁️ View Details",
-                Font = new Font("Arial", 8),
-                ForeColor = Color.White,
-                BackColor = Color.FromArgb(70, 130, 180),
-                Location = new Point(650, 35),
-                Size = new Size(80, 25),
-                FlatStyle = FlatStyle.Flat
-            };
-            btnDetails.Click += (s, e) => ShowOrderDetails(order);
-
-            panel.Controls.AddRange(new Control[] {
-                lblStatus, lblOrderInfo, lblAmount, lblItems, lblItemCount, btnDetails
-            });
-
-            return panel;
         }
 
-        private string GetStatusIcon(string status)
+        private void BtnRefresh_Click(object sender, EventArgs e)
         {
-            return status switch
-            {
-                "Delivered" => "✅",
-                "In Progress" => "🚚",
-                "Preparing" => "👨‍🍳",
-                _ => "📋"
-            };
+            LoadOrderHistory();
         }
 
-        private Color GetStatusColor(string status)
+        private void BtnBack_Click(object sender, EventArgs e)
         {
-            return status switch
-            {
-                "Delivered" => Color.FromArgb(76, 175, 80), // Green
-                "In Progress" => Color.FromArgb(255, 152, 0), // Amber
-                "Preparing" => Color.FromArgb(33, 150, 243), // Blue
-                _ => Color.Gray
-            };
+            this.Close();
         }
-
-        private void ShowOrderDetails(OrderHistoryItem order)
-        {
-            var details = $"📋 Order #{order.OrderNumber}\n\n";
-            details += $"📅 Date: {order.OrderDate:MMMM dd, yyyy 'at' HH:mm}\n";
-            details += $"💰 Amount: £{order.Amount:F2}\n";
-            details += $"📦 Items ({order.ItemCount}):\n";
-            
-            foreach (var item in order.Items)
-            {
-                details += $"   • {item}\n";
-            }
-            
-            details += $"\n📊 Status: {order.Status}";
-            
-            if (order.EstimatedDelivery.HasValue)
-            {
-                details += $"\n⏰ Estimated Delivery: {order.EstimatedDelivery.Value:HH:mm}";
-            }
-
-            MessageBox.Show(details, $"Order #{order.OrderNumber} Details", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void FilterOrders()
-        {
-            // Get the selected filter from the combo box
-            var filterComboBox = this.Controls.OfType<Panel>()
-                .FirstOrDefault(p => p.Controls.OfType<ComboBox>().Any())
-                ?.Controls.OfType<ComboBox>().FirstOrDefault();
-            
-            if (filterComboBox == null) return;
-            
-            var selectedFilter = filterComboBox.Text;
-            List<OrderHistoryItem> filteredOrders;
-            
-            switch (selectedFilter)
-            {
-                case "Delivered":
-                    filteredOrders = orderHistory.Where(o => o.Status == "Delivered").ToList();
-                    break;
-                case "In Progress":
-                    filteredOrders = orderHistory.Where(o => o.Status == "In Progress").ToList();
-                    break;
-                case "Preparing":
-                    filteredOrders = orderHistory.Where(o => o.Status == "Preparing").ToList();
-                    break;
-                case "All Orders":
-                default:
-                    filteredOrders = orderHistory.ToList();
-                    break;
-            }
-            
-            DisplayOrders(filteredOrders);
-        }
-
-        private void UpdateSummary()
-        {
-            totalOrdersLabel.Text = $"📊 Total Orders: {orderHistory.Count}";
-            
-            decimal totalSpent = orderHistory.Sum(o => o.Amount);
-            totalSpentLabel.Text = $"💰 Total Spent: £{totalSpent:F2}";
-            
-            loyaltyLabel.Text = "🎁 Loyalty Rewards: You've saved £5.20 this month!";
-        }
-
-        private void ExportToPDF()
-        {
-            MessageBox.Show("PDF export functionality would be implemented here.\n\nThis would generate a detailed PDF report of your order history.", 
-                "Export to PDF", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void PrintHistory()
-        {
-            MessageBox.Show("Print functionality would be implemented here.\n\nThis would print a formatted version of your order history.", 
-                "Print History", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-    }
-
-    public class OrderHistoryItem
-    {
-        public string OrderNumber { get; set; }
-        public decimal Amount { get; set; }
-        public string Status { get; set; }
-        public int ItemCount { get; set; }
-        public DateTime OrderDate { get; set; }
-        public List<string> Items { get; set; }
-        public DateTime? EstimatedDelivery { get; set; }
     }
 } 

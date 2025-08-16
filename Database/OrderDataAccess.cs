@@ -21,8 +21,49 @@ namespace OnlineOrderingSystem.Database
         {
             using (var context = new OrderingDbContext())
             {
+                // Ensure OrderItems and StatusHistory are properly configured
+                foreach (var item in order.OrderItems)
+                {
+                    item.OrderID = 0; // Reset to allow EF to generate new IDs
+                }
+
+                foreach (var status in order.StatusHistory)
+                {
+                    status.OrderID = 0; // Reset to allow EF to generate new IDs
+                }
+
                 context.Orders.Add(order);
                 context.SaveChanges();
+
+                // Update the order with the generated ID
+                return order;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new order with payment integration
+        /// </summary>
+        /// <param name="order">The order to create</param>
+        /// <param name="payment">The payment for the order</param>
+        /// <returns>The created order with payment information</returns>
+        public Order CreateOrderWithPayment(Order order, Payment payment)
+        {
+            using (var context = new OrderingDbContext())
+            {
+                // Create the order first
+                context.Orders.Add(order);
+                context.SaveChanges();
+
+                // Create payment entity and save it
+                var paymentEntity = PaymentEntity.FromPayment(payment, order.OrderID, order.CustomerID);
+                context.PaymentEntities.Add(paymentEntity);
+                context.SaveChanges();
+
+                // Update order payment status
+                order.PaymentStatus = paymentEntity.PaymentStatus;
+                context.Orders.Update(order);
+                context.SaveChanges();
+
                 return order;
             }
         }
@@ -72,6 +113,7 @@ namespace OnlineOrderingSystem.Database
             {
                 return context.Orders
                     .Include(o => o.OrderItems)
+                    .Include(o => o.StatusHistory)
                     .Where(o => o.OrderStatus.Equals(status, StringComparison.OrdinalIgnoreCase))
                     .OrderBy(o => o.OrderDate)
                     .ToList();
@@ -87,6 +129,32 @@ namespace OnlineOrderingSystem.Database
         {
             using (var context = new OrderingDbContext())
             {
+                // Update order items
+                foreach (var item in order.OrderItems)
+                {
+                    if (item.OrderDetailID == 0)
+                    {
+                        context.OrderDetails.Add(item);
+                    }
+                    else
+                    {
+                        context.OrderDetails.Update(item);
+                    }
+                }
+
+                // Update status history
+                foreach (var status in order.StatusHistory)
+                {
+                    if (status.Id == 0)
+                    {
+                        context.OrderStatusUpdates.Add(status);
+                    }
+                    else
+                    {
+                        context.OrderStatusUpdates.Update(status);
+                    }
+                }
+
                 context.Orders.Update(order);
                 return context.SaveChanges() > 0;
             }
@@ -103,10 +171,18 @@ namespace OnlineOrderingSystem.Database
         {
             using (var context = new OrderingDbContext())
             {
-                var order = context.Orders.Find(orderId);
+                var order = context.Orders
+                    .Include(o => o.StatusHistory)
+                    .FirstOrDefault(o => o.OrderID == orderId);
+                
                 if (order != null)
                 {
                     order.UpdateStatus(newStatus, message);
+                    
+                    // Save the new status update
+                    var latestStatus = order.StatusHistory.Last();
+                    context.OrderStatusUpdates.Add(latestStatus);
+                    
                     context.Orders.Update(order);
                     return context.SaveChanges() > 0;
                 }
@@ -205,5 +281,59 @@ namespace OnlineOrderingSystem.Database
                     .Sum(o => o.TotalAmount);
             }
         }
+
+        /// <summary>
+        /// Gets complete order history for a customer with payment information
+        /// </summary>
+        /// <param name="customerId">The customer ID</param>
+        /// <returns>List of orders with payment details</returns>
+        public List<OrderWithPayment> GetOrderHistoryWithPayments(int customerId)
+        {
+            using (var context = new OrderingDbContext())
+            {
+                var query = from order in context.Orders
+                           join payment in context.PaymentEntities on order.OrderID equals payment.OrderID into payments
+                           from payment in payments.DefaultIfEmpty()
+                           where order.CustomerID == customerId
+                           orderby order.OrderDate descending
+                           select new OrderWithPayment
+                           {
+                               Order = order,
+                               Payment = payment
+                           };
+
+                return query.ToList();
+            }
+        }
+
+        /// <summary>
+        /// Gets order statistics for a customer
+        /// </summary>
+        /// <param name="customerId">The customer ID</param>
+        /// <returns>Tuple containing total orders, total spent, and average order value</returns>
+        public (int totalOrders, double totalSpent, double averageOrderValue) GetOrderStatistics(int customerId)
+        {
+            using (var context = new OrderingDbContext())
+            {
+                var orders = context.Orders
+                    .Where(o => o.CustomerID == customerId && o.OrderStatus == "Completed")
+                    .ToList();
+
+                var totalOrders = orders.Count;
+                var totalSpent = orders.Sum(o => o.TotalAmount);
+                var averageOrderValue = totalOrders > 0 ? totalSpent / totalOrders : 0;
+
+                return (totalOrders, totalSpent, averageOrderValue);
+            }
+        }
+    }
+
+    /// <summary>
+    /// DTO for order with payment information
+    /// </summary>
+    public class OrderWithPayment
+    {
+        public Order Order { get; set; } = new();
+        public PaymentEntity? Payment { get; set; }
     }
 } 

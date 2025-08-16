@@ -123,12 +123,14 @@ namespace OnlineOrderingSystem.Models
     public static class GlobalUser
     {
         public static object? CurrentUser { get; set; }
+        public static Customer? CurrentCustomer { get; set; }
 
         public static void Logout()
         {
             CurrentUser = null;
+            CurrentCustomer = null;
         }
 
-        public static bool IsLoggedIn => CurrentUser != null;
+        public static bool IsLoggedIn => CurrentCustomer != null || CurrentUser != null;
     }
 } 

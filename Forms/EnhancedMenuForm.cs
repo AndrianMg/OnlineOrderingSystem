@@ -18,10 +18,7 @@ namespace OnlineOrderingSystem.Forms
         // UI Controls
         private TabControl categoryTabs;
         private ListBox lstMenu;
-        private Panel cartPreviewPanel;
         private TextBox txtSearch;
-        private Label lblTotal;
-        private Label lblItemCount;
         private Panel cardPanel;
         private Label lblLogo;
         private Label lblTagline;
@@ -114,7 +111,7 @@ namespace OnlineOrderingSystem.Forms
             var headerPanel = new Panel
             {
                 Location = new Point(50, 120),
-                Size = new Size(1400, 80),
+                Size = new Size(1400, 100), // Increased height to accommodate larger buttons
                 BackColor = Color.FromArgb(248, 249, 250),
                 BorderStyle = BorderStyle.None
             };
@@ -154,16 +151,14 @@ namespace OnlineOrderingSystem.Forms
             // Add placeholder behavior
             AddPlaceholderBehavior(txtSearch, "Search by name or dietary preference...");
 
-
-
-            // Action buttons
-            var btnBack = CreateStyledButton("← Back", primaryBlue, new Point(1100, 20), new Size(100, 35));
+            // Action buttons - Made larger and better spaced
+            var btnBack = CreateStyledButton("← Back", primaryBlue, new Point(900, 20), new Size(120, 45));
             btnBack.Click += BtnBack_Click;
 
-            var btnViewCart = CreateStyledButton("🛒 View Cart", successGreen, new Point(1220, 20), new Size(120, 35));
+            var btnViewCart = CreateStyledButton("🛒 View Cart", successGreen, new Point(1040, 20), new Size(140, 45));
             btnViewCart.Click += BtnViewCart_Click;
 
-            var btnCheckout = CreateStyledButton("💳 Checkout", warningRed, new Point(1360, 20), new Size(120, 35));
+            var btnCheckout = CreateStyledButton("💳 Checkout", warningRed, new Point(1200, 20), new Size(140, 45));
             btnCheckout.Click += BtnCheckout_Click;
 
             headerPanel.Controls.AddRange(new Control[] {
@@ -193,49 +188,11 @@ namespace OnlineOrderingSystem.Forms
             };
 
             // Cart preview panel - aligned with the menu list
-            cartPreviewPanel = new Panel
-            {
-                Location = new Point(1080, 280),
-                Size = new Size(370, 440),
-                BackColor = Color.FromArgb(248, 249, 250),
-                BorderStyle = BorderStyle.FixedSingle
-            };
-
-            var lblCartTitle = new Label
-            {
-                Text = "🛒 Your Cart",
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                ForeColor = darkGray,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Location = new Point(10, 10),
-                Size = new Size(350, 30)
-            };
-
-            lblTotal = new Label
-            {
-                Text = "Total: £0.00",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                ForeColor = darkGray,
-                TextAlign = ContentAlignment.MiddleRight,
-                Location = new Point(200, 400),
-                Size = new Size(150, 25)
-            };
-
-            lblItemCount = new Label
-            {
-                Text = "Items: 0",
-                Font = new Font("Segoe UI", 10),
-                ForeColor = Color.Gray,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(10, 400),
-                Size = new Size(100, 25)
-            };
-
-            cartPreviewPanel.Controls.AddRange(new Control[] { lblCartTitle, lblTotal, lblItemCount });
+            // Removed cartPreviewPanel as per edit hint
 
             // Add all controls to the card panel
             cardPanel.Controls.AddRange(new Control[] {
-                lblLogo, lblTagline, headerPanel, categoryTabs, lstMenu, cartPreviewPanel
+                lblLogo, lblTagline, headerPanel, categoryTabs, lstMenu
             });
 
             // Add card panel to form
@@ -751,128 +708,15 @@ namespace OnlineOrderingSystem.Forms
         }
 
         /// <summary>
-        /// Adds an item to the cart with specified quantity
+        /// Adds an item to the cart with the specified quantity
         /// </summary>
-        /// <param name="item">Item to add</param>
-        /// <param name="quantity">Quantity to add</param>
+        /// <param name="item">The item to add</param>
+        /// <param name="quantity">The quantity to add</param>
         private void AddItemToCart(Item item, int quantity)
         {
             // Add the item with quantity to the CartItem list
             currentCart.Items.Add(new CartItem(item, quantity));
-            UpdateCartPreview();
             ShowAlert($"Added {quantity}x {item.Name} to cart!", false);
-        }
-
-        /// <summary>
-        /// Updates the cart preview panel with current cart contents
-        /// </summary>
-        private void UpdateCartPreview()
-        {
-            // Clear existing cart item controls (except the title and summary labels)
-            var controlsToRemove = cartPreviewPanel.Controls.OfType<Control>()
-                .Where(c => c != lblTotal && c != lblItemCount && c.Text != "🛒 Your Cart")
-                .ToList();
-            
-            foreach (var control in controlsToRemove)
-            {
-                cartPreviewPanel.Controls.Remove(control);
-            }
-
-            var cartItems = currentCart.Items;
-            if (cartItems.Count > 0)
-            {
-                int yPosition = 50; // Start below the cart title
-                foreach (var cartItem in cartItems)
-                {
-                    var itemPanel = CreateCartItemPanel(cartItem.Item.Name, cartItem.Quantity, cartItem.Item.Price, yPosition);
-                    cartPreviewPanel.Controls.Add(itemPanel);
-                    yPosition += 60;
-                }
-            }
-
-            lblItemCount.Text = $"📦 Items: {cartItems.Count}";
-            lblTotal.Text = $"💰 Total: £{currentCart.GetTotal():F2}";
-        }
-
-        /// <summary>
-        /// Creates a panel for displaying a cart item
-        /// </summary>
-        /// <param name="itemName">Name of the item</param>
-        /// <param name="quantity">Quantity of the item</param>
-        /// <param name="price">Price per item</param>
-        /// <param name="yPosition">Vertical position</param>
-        /// <returns>Configured panel control</returns>
-        private Panel CreateCartItemPanel(string itemName, int quantity, double price, int yPosition)
-        {
-            var panel = new Panel
-            {
-                Location = new Point(10, yPosition),
-                Size = new Size(350, 50),
-                BackColor = Color.White,
-                BorderStyle = BorderStyle.FixedSingle
-            };
-
-            // Item name
-            var lblName = new Label
-            {
-                Text = itemName,
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                ForeColor = darkGray,
-                Location = new Point(10, 5),
-                Size = new Size(180, 20)
-            };
-
-            // Quantity
-            var lblQuantity = new Label
-            {
-                Text = $"x{quantity}",
-                Font = new Font("Segoe UI", 10),
-                ForeColor = Color.Gray,
-                Location = new Point(200, 5),
-                Size = new Size(50, 20)
-            };
-
-            // Total price
-            var lblPrice = new Label
-            {
-                Text = $"£{(price * quantity):F2}",
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                ForeColor = successGreen,
-                Location = new Point(260, 5),
-                Size = new Size(80, 20)
-            };
-
-            // Remove button
-            var btnRemove = new Button
-            {
-                Text = "❌",
-                Font = new Font("Segoe UI", 8),
-                ForeColor = Color.White,
-                BackColor = warningRed,
-                Location = new Point(320, 5),
-                Size = new Size(25, 20),
-                FlatStyle = FlatStyle.Flat
-            };
-
-            btnRemove.Click += (s, e) => RemoveItemFromCart(itemName);
-
-            panel.Controls.AddRange(new Control[] { lblName, lblQuantity, lblPrice, btnRemove });
-            return panel;
-        }
-
-        /// <summary>
-        /// Removes all instances of an item from the cart
-        /// </summary>
-        /// <param name="itemName">Name of the item to remove</param>
-        private void RemoveItemFromCart(string itemName)
-        {
-            var itemsToRemove = currentCart.Items.Where(cartItem => cartItem.Item.Name == itemName).ToList();
-            foreach (var cartItem in itemsToRemove)
-            {
-                currentCart.Items.Remove(cartItem);
-            }
-            UpdateCartPreview();
-            ShowAlert($"Removed {itemName} from cart!", false);
         }
 
         /// <summary>

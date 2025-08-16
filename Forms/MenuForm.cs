@@ -12,12 +12,10 @@ namespace OnlineOrderingSystem.Forms
     {
         private ComboBox cmbCategory;
         private ListBox lstMenu;
-        private ListBox lstCart;
         private Button btnAddToCart;
         private Button btnViewCart;
         private Button btnCheckout;
         private Button btnBack;
-        private Label lblTotal;
         private Label lblAlert;
         private Cart currentCart;
         private List<Item> allItems;
@@ -80,7 +78,7 @@ namespace OnlineOrderingSystem.Forms
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
 
-            // Menu Items
+            // Menu Items - Now using full width since cart is removed
             var lblMenu = new Label
             {
                 Text = "Menu Items:",
@@ -93,39 +91,10 @@ namespace OnlineOrderingSystem.Forms
             lstMenu = new ListBox
             {
                 Location = new Point(50, 180),
-                Size = new Size(600, 400),
+                Size = new Size(1000, 400), // Increased width to use full form width
                 BackColor = Color.FromArgb(50, 50, 50),
                 ForeColor = Color.White,
                 Font = new Font("Arial", 11)
-            };
-
-            // Cart
-            var lblCart = new Label
-            {
-                Text = "Your Cart:",
-                Font = new Font("Arial", 14, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
-                Location = new Point(700, 150),
-                Size = new Size(200, 25)
-            };
-
-            lstCart = new ListBox
-            {
-                Location = new Point(700, 180),
-                Size = new Size(400, 300),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
-                Font = new Font("Arial", 10)
-            };
-
-            // Total
-            lblTotal = new Label
-            {
-                Text = "Total: £0.00",
-                Font = new Font("Arial", 14, FontStyle.Bold),
-                ForeColor = Color.White,
-                Location = new Point(700, 500),
-                Size = new Size(200, 25)
             };
 
             // Buttons
@@ -189,11 +158,10 @@ namespace OnlineOrderingSystem.Forms
                 Size = new Size(1100, 25)
             };
 
-            // Add controls to form
+            // Add controls to form - removed cart-related controls
             this.Controls.AddRange(new Control[] {
                 lblTitle, lblCategory, cmbCategory, lblMenu, lstMenu,
-                lblCart, lstCart, lblTotal, btnAddToCart, btnViewCart,
-                btnCheckout, btnBack, lblAlert
+                btnAddToCart, btnViewCart, btnCheckout, btnBack, lblAlert
             });
 
             // Initialize cart
@@ -370,15 +338,17 @@ namespace OnlineOrderingSystem.Forms
                 cartItemText += $" ({string.Join(", ", customizations)})";
             }
 
-            lstCart.Items.Add(cartItemText);
-            UpdateTotal();
+            // The original code had lstCart.Items.Add(cartItemText);
+            // Since lstCart is removed, this line is no longer relevant.
+            // The total update logic is also removed as lblTotal is removed.
             ShowAlert($"{item.Name} added to cart!", false);
         }
 
         private void UpdateTotal()
         {
-            var total = currentCart.CalculateTotal();
-            lblTotal.Text = $"Total: £{total:F2}";
+            // The original code had var total = currentCart.CalculateTotal();
+            // Since lblTotal is removed, this line is no longer relevant.
+            // The total update logic is also removed as lblTotal is removed.
         }
 
         private void BtnViewCart_Click(object sender, EventArgs e)
@@ -387,7 +357,7 @@ namespace OnlineOrderingSystem.Forms
             {
                 var cartForm = new CartForm(currentCart);
                 cartForm.ShowDialog();
-                RefreshCartDisplay();
+                // RefreshCartDisplay(); // This method is no longer available
             }
             else
             {
@@ -397,12 +367,7 @@ namespace OnlineOrderingSystem.Forms
 
         private void RefreshCartDisplay()
         {
-            lstCart.Items.Clear();
-            foreach (var cartItem in currentCart.Items)
-            {
-                lstCart.Items.Add($"{cartItem.Item.Name} - £{cartItem.Item.Price:F2} x {cartItem.Quantity}");
-            }
-            UpdateTotal();
+            // This method is no longer available
         }
 
         private void BtnCheckout_Click(object sender, EventArgs e)
@@ -414,7 +379,7 @@ namespace OnlineOrderingSystem.Forms
                 if (checkoutForm.OrderPlaced)
                 {
                     currentCart.Clear();
-                    RefreshCartDisplay();
+                    // RefreshCartDisplay(); // This method is no longer available
                     ShowAlert("Order placed successfully! Thank you for choosing Tasty Eats!", false);
                 }
             }
