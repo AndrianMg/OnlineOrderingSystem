@@ -19,6 +19,9 @@ namespace OnlineOrderingSystem.Models
         
         // New properties for Tasty Eats
         public List<string> Customizations { get; set; } = new List<string>();
+        
+        // Database column for customizations (stored as JSON string)
+        public string CustomizationsJson { get; set; } = "[]";
         public double CustomizationCost { get; set; }
         public string DietaryNotes { get; set; } = string.Empty;
         public bool IsSpicy { get; set; }

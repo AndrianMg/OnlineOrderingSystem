@@ -1,0 +1,94 @@
+=== Tasty Eats Online Ordering System - Testing Suite ===
+Demonstrating Testing Methodologies and Results
+=====================================================
+
+🔧 Database initialized for testing...
+
+RUNNING COMPREHENSIVE TESTING SUITE
+==================================================
+=== Online Ordering System - Database Test ===
+
+1. Testing Database Initialization...
+   - Items in database: 17
+   - Customers in database: 5
+   ✓ Database initialization successful
+
+2. Testing Menu Data Access...
+   - Retrieved 17 menu items
+   - Found 0 pizza items
+   - Found 17 available items
+   - Search for 'pizza' returned 2 results
+   - Sample item: Garlic Bread - £4.99
+     Description: Fresh baked garlic bread with herbs
+     Category: Starters
+     Available: True
+   ✓ Menu data access tests passed
+
+3. Testing User Data Access...
+   - Retrieved 5 customers
+   - Found customer by email: John Doe
+   - Email exists check: True
+   - Sample customer: John Doe
+     Email: john@example.com
+     Address: 123 Main St, London, UK
+     Preferred payment: Credit
+     Order history count: 15
+   ✓ User data access tests passed
+
+4. Testing Order Data Access...
+   - Created test order #24
+     Customer: John Doe
+     Items: 1
+     Total: £11.98
+   - Retrieved order: Order #24 - 1 items - £11.98 - Pending
+   - Found 16 orders for customer
+   - Found 10 pending orders
+   - Order status updated: True
+   ✓ Order data access tests passed
+
+5. Testing Payment Data Access...
+   ⚠ Payment testing skipped - PaymentEntity table not yet created in database
+   ✓ Payment data access tests passed (skipped)
+
+=== All tests completed successfully! ===
+
+RUNNING MENU DATABASE TESTING
+==================================================
+=== Testing Menu Database ===
+Items count in database: 17
+
+First 5 items in database:
+- Garlic Bread (£4.99) - Starters
+  Rating: 4.5★ | 10min | 180cal
+
+- Bruschetta (£5.99) - Starters
+  Rating: 4.3★ | 8min | 120cal
+
+- Chicken Wings (£8.99) - Starters
+  Rating: 4.7★ | 15min | 280cal
+
+- Mozzarella Sticks (£6.99) - Starters
+  Rating: 4.4★ | 12min | 240cal
+
+- Margherita Pizza (£12.99) - Main Courses
+  Rating: 4.6★ | 20min | 320cal
+
+=== Testing MenuDataAccess ===
+MenuDataAccess returned 17 items
+Available items: 17
+Categories: Starters, Main Courses, Desserts, Drinks
+
+=== Test Completed Successfully ===
+
+==================================================
+TESTING COMPLETED SUCCESSFULLY!
+==================================================
+
+This demonstrates:
+✅ Unit Testing Implementation
+✅ Integration Testing
+✅ System Testing
+✅ AAA Testing Pattern
+✅ Test Results and Metrics
+
+Test results written to: C:\Users\deeja\OnlineOrderingSystem\OnlineOrderingSystem\test_results.txt

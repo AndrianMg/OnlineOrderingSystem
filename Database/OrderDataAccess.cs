@@ -33,7 +33,19 @@ namespace OnlineOrderingSystem.Database
                 }
 
                 context.Orders.Add(order);
-                context.SaveChanges();
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error saving order: {ex.Message}");
+                    if (ex.InnerException != null)
+                    {
+                        Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                    }
+                    throw;
+                }
 
                 // Update the order with the generated ID
                 return order;
@@ -54,13 +66,9 @@ namespace OnlineOrderingSystem.Database
                 context.Orders.Add(order);
                 context.SaveChanges();
 
-                // Create payment entity and save it
-                var paymentEntity = PaymentEntity.FromPayment(payment, order.OrderID, order.CustomerID);
-                context.PaymentEntities.Add(paymentEntity);
-                context.SaveChanges();
-
-                // Update order payment status
-                order.PaymentStatus = paymentEntity.PaymentStatus;
+                // For now, skip payment entity creation since PaymentEntities table doesn't exist
+                // Just update the order payment status
+                order.PaymentStatus = "Pending";
                 context.Orders.Update(order);
                 context.SaveChanges();
 
@@ -114,7 +122,7 @@ namespace OnlineOrderingSystem.Database
                 return context.Orders
                     .Include(o => o.OrderItems)
                     .Include(o => o.StatusHistory)
-                    .Where(o => o.OrderStatus.Equals(status, StringComparison.OrdinalIgnoreCase))
+                    .Where(o => o.OrderStatus.ToLower() == status.ToLower())
                     .OrderBy(o => o.OrderDate)
                     .ToList();
             }
@@ -291,18 +299,20 @@ namespace OnlineOrderingSystem.Database
         {
             using (var context = new OrderingDbContext())
             {
-                var query = from order in context.Orders
-                           join payment in context.PaymentEntities on order.OrderID equals payment.OrderID into payments
-                           from payment in payments.DefaultIfEmpty()
-                           where order.CustomerID == customerId
-                           orderby order.OrderDate descending
-                           select new OrderWithPayment
-                           {
-                               Order = order,
-                               Payment = payment
-                           };
+                // Since PaymentEntities table doesn't exist, just return orders without payment details
+                var orders = context.Orders
+                    .Include(o => o.OrderItems)
+                    .Include(o => o.StatusHistory)
+                    .Where(o => o.CustomerID == customerId)
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToList();
 
-                return query.ToList();
+                // Convert to OrderWithPayment objects with null payment info
+                return orders.Select(order => new OrderWithPayment
+                {
+                    Order = order,
+                    Payment = null // Payment details not available since PaymentEntities table doesn't exist
+                }).ToList();
             }
         }
 

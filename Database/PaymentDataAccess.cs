@@ -22,7 +22,19 @@ namespace OnlineOrderingSystem.Database
             using (var context = new OrderingDbContext())
             {
                 context.PaymentEntities.Add(payment);
-                context.SaveChanges();
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error saving payment: {ex.Message}");
+                    if (ex.InnerException != null)
+                    {
+                        Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                    }
+                    throw;
+                }
                 return payment;
             }
         }
@@ -82,7 +94,7 @@ namespace OnlineOrderingSystem.Database
             using (var context = new OrderingDbContext())
             {
                 return context.PaymentEntities
-                    .Where(p => p.PaymentStatus.Equals(status, StringComparison.OrdinalIgnoreCase))
+                    .Where(p => p.PaymentStatus.ToLower() == status.ToLower())
                     .OrderByDescending(p => p.PaymentDate)
                     .ToList();
             }

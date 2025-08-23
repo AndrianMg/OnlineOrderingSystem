@@ -14,6 +14,7 @@ namespace OnlineOrderingSystem.Forms
     /// </summary>
     public class MainForm : Form
     {
+        private int customerId;
         private Panel cardPanel;
         private Label lblLogo;
         private Label lblTagline;
@@ -29,8 +30,9 @@ namespace OnlineOrderingSystem.Forms
         /// <summary>
         /// Initializes the modern main form
         /// </summary>
-        public MainForm()
+        public MainForm(int customerId = 0)
         {
+            this.customerId = customerId;
             InitializeComponent();
         }
 
@@ -321,7 +323,7 @@ namespace OnlineOrderingSystem.Forms
         /// </summary>
         private void OpenMenuForm()
         {
-            var menuForm = new EnhancedMenuForm();
+            var menuForm = new EnhancedMenuForm(customerId);
             menuForm.ShowDialog();
         }
 
@@ -332,7 +334,7 @@ namespace OnlineOrderingSystem.Forms
         {
             // Create a default empty cart for demonstration
             var cart = new Cart();
-            var cartForm = new CartForm(cart);
+            var cartForm = new CartForm(cart, customerId);
             cartForm.ShowDialog();
         }
 
@@ -341,7 +343,7 @@ namespace OnlineOrderingSystem.Forms
         /// </summary>
         private void OpenOrderHistoryForm()
         {
-            var historyForm = new OrderHistoryForm();
+            var historyForm = new OrderHistoryForm(customerId);
             historyForm.ShowDialog();
         }
 

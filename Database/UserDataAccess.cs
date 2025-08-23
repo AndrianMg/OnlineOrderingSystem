@@ -135,7 +135,7 @@ namespace OnlineOrderingSystem.Database
                 // Note: In a real application, passwords would be hashed and salted
                 // This is a simplified implementation for demonstration
                 var customer = context.Customers
-                    .FirstOrDefault(c => c.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+                    .FirstOrDefault(c => c.Email.ToLower() == email.ToLower());
                 
                 // In a real app, you would verify hashed password here
                 if (customer != null)
@@ -159,7 +159,7 @@ namespace OnlineOrderingSystem.Database
             using (var context = new OrderingDbContext())
             {
                 return context.Customers
-                    .Any(c => c.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+                    .Any(c => c.Email.ToLower() == email.ToLower());
             }
         }
 

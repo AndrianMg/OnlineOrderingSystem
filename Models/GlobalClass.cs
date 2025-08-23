@@ -67,7 +67,7 @@ namespace OnlineOrderingSystem.Models
         public void LoadConfiguration()
         {
             // Load default configuration
-            SystemConfig["DatabaseConnectionString"] = "Server=localhost;Database=OnlineOrdering;Trusted_Connection=true;";
+            SystemConfig["DatabaseConnectionString"] = "Server=localhost;Database=OnlineOrdering;Trusted_Connection=true;TrustServerCertificate=true;";
             SystemConfig["LogLevel"] = "Info";
             SystemConfig["ApplicationName"] = "Online Ordering System";
             SystemConfig["Version"] = "1.0.0";

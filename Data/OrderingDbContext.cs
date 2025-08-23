@@ -35,7 +35,7 @@ namespace OnlineOrderingSystem.Data
             if (!optionsBuilder.IsConfigured)
             {
                 // Use SQL Server database
-                optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=FoodOrderingSystem;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=FoodOrderingSystem;Trusted_Connection=True;TrustServerCertificate=true;");
             }
         }
 
@@ -118,6 +118,9 @@ namespace OnlineOrderingSystem.Data
                 entity.Property(e => e.SpecialInstructions).HasMaxLength(500);
                 entity.Property(e => e.DietaryNotes).HasMaxLength(250);
                 entity.Property(e => e.AllergenInfo).HasMaxLength(250);
+                
+                // Map CustomizationsJson to the Customizations database column
+                entity.Property(e => e.CustomizationsJson).HasColumnName("Customizations");
                 
                 // Configure Customizations to be ignored by EF Core (not stored in database)
                 entity.Ignore(e => e.Customizations);

@@ -29,6 +29,7 @@ namespace OnlineOrderingSystem.Forms
         private List<Item> filteredItems;
         private Dictionary<string, List<Item>> itemsByCategory;
         private MenuDataAccess menuDataAccess;
+        private int customerId;
 
         // Color scheme
         private Color primaryBlue = Color.FromArgb(52, 152, 219);
@@ -41,8 +42,9 @@ namespace OnlineOrderingSystem.Forms
         /// <summary>
         /// Initializes the modern enhanced menu form
         /// </summary>
-        public EnhancedMenuForm()
+        public EnhancedMenuForm(int customerId = 1)
         {
+            this.customerId = customerId;
             InitializeComponent();
             menuDataAccess = new MenuDataAccess();
             LoadMenuItems();
@@ -786,7 +788,7 @@ namespace OnlineOrderingSystem.Forms
                 return;
             }
 
-            var cartForm = new CartForm(currentCart);
+            var cartForm = new CartForm(currentCart, customerId);
             cartForm.ShowDialog();
         }
 
@@ -803,7 +805,7 @@ namespace OnlineOrderingSystem.Forms
                 return;
             }
 
-            var checkoutForm = new CheckoutForm(currentCart);
+            var checkoutForm = new CheckoutForm(currentCart, customerId);
             checkoutForm.ShowDialog();
         }
     }

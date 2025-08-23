@@ -33,7 +33,7 @@ namespace OnlineOrderingSystem.Database
             using (var context = new OrderingDbContext())
             {
                 return context.Items
-                    .Where(item => item.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
+                    .Where(item => item.Category.ToLower() == category.ToLower())
                     .ToList();
             }
         }

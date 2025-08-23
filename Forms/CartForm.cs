@@ -8,6 +8,7 @@ namespace OnlineOrderingSystem.Forms
     public class CartForm : Form
     {
         private Cart cart;
+        private int customerId;
         private ListBox lstCartItems;
         private Button btnRemoveItem;
         private Button btnUpdateQuantity;
@@ -17,9 +18,10 @@ namespace OnlineOrderingSystem.Forms
         private Label lblTotal;
         private Label lblItemCount;
 
-        public CartForm(Cart cart)
+        public CartForm(Cart cart, int customerId = 1)
         {
             this.cart = cart;
+            this.customerId = customerId;
             InitializeComponent();
         }
 
@@ -258,7 +260,7 @@ namespace OnlineOrderingSystem.Forms
         {
             if (cart.Items.Count > 0)
             {
-                var checkoutForm = new CheckoutForm(cart);
+                var checkoutForm = new CheckoutForm(cart, customerId);
                 checkoutForm.ShowDialog();
                 if (checkoutForm.OrderPlaced)
                 {

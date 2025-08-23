@@ -40,6 +40,7 @@ namespace OnlineOrderingSystem.Models
         public void CreateOrder(int customerID, Cart cart)
         {
             CustomerID = customerID;
+            RestaurantID = 1; // Set default restaurant ID
             OrderDate = DateTime.Now;
             OrderStatus = "Pending";
             PaymentStatus = "Pending";
