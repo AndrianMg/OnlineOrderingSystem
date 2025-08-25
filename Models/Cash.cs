@@ -1,73 +1,38 @@
 using System;
+using OnlineOrderingSystem.Models;
 
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Represents cash payment processing
+    /// Cash payment processing
     /// </summary>
     public class Cash : Payment
     {
-        public double AmountTendered { get; set; }
-        public double TotalAmount { get; set; }
-        public double ChangeDue { get; set; }
+        public decimal AmountTendered { get; set; }
+        public decimal TotalAmount { get; set; }
+        public decimal ChangeDue => AmountTendered - TotalAmount;
 
-        /// <summary>
-        /// Calculates the change due for cash payment
-        /// </summary>
-        /// <returns>The change amount</returns>
-        public double CalculateChange()
+        public Cash()
         {
-            ChangeDue = AmountTendered - TotalAmount;
-            return ChangeDue;
+            PaymentMethod = "Cash";
+            PaymentStatus = "Pending";
         }
 
-        /// <summary>
-        /// Validates the cash payment
-        /// </summary>
-        /// <returns>True if payment is valid, false otherwise</returns>
-        public override bool ValidatePayment()
+        public override void ProcessPayment()
         {
             if (AmountTendered < TotalAmount)
             {
-                Console.WriteLine("Insufficient cash tendered.");
-                return false;
+                throw new InvalidOperationException("Insufficient amount tendered");
             }
 
-            if (AmountTendered <= 0)
-            {
-                Console.WriteLine("Invalid amount tendered.");
-                return false;
-            }
-
-            return true;
+            PaymentStatus = "Completed";
+            PaymentDate = DateTime.Now;
+            Console.WriteLine($"Cash payment processed. Amount: {TotalAmount:C}, Tendered: {AmountTendered:C}, Change: {ChangeDue:C}");
         }
 
-        /// <summary>
-        /// Processes the cash payment
-        /// </summary>
-        public override void ProcessPayment()
+        public override bool ValidatePayment()
         {
-            if (ValidatePayment())
-            {
-                PaymentStatus = "Completed";
-                PaymentDate = DateTime.Now;
-                CalculateChange();
-                Console.WriteLine($"Cash payment processed. Change due: ${ChangeDue:F2}");
-            }
-            else
-            {
-                PaymentStatus = "Failed";
-                Console.WriteLine("Cash payment failed validation.");
-            }
-        }
-
-        /// <summary>
-        /// Gets the payment details for cash payment
-        /// </summary>
-        /// <returns>Cash payment details</returns>
-        public override string GetPaymentDetails()
-        {
-            return $"Cash Payment - Amount Tendered: ${AmountTendered:F2}, Total: ${TotalAmount:F2}, Change: ${ChangeDue:F2}";
+            return AmountTendered >= TotalAmount && TotalAmount > 0;
         }
     }
 } 

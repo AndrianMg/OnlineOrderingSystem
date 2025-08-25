@@ -37,7 +37,8 @@ namespace OnlineOrderingSystem.Database
                 {
                     context.SaveChanges();
                 }
-                catch (Exception ex)
+                catch (Exception ex)
+
                 {
                     Console.WriteLine($"Error saving order: {ex.Message}");
                     if (ex.InnerException != null)
@@ -74,7 +75,8 @@ namespace OnlineOrderingSystem.Database
 
                 return order;
             }
-        }
+        }
+
         /// <summary>
         /// Retrieves an order by ID with its order details
         /// </summary>

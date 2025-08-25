@@ -101,8 +101,7 @@ namespace OnlineOrderingSystem
                     testOrder.DeliveryFee = 2.99;
 
                     // Create a test payment
-                    var testPayment = new Cash { AmountTendered = testOrder.TotalAmount + 5, TotalAmount = testOrder.TotalAmount };
-                    testPayment.SetAmount(testOrder.TotalAmount);
+                    var testPayment = new Cash { AmountTendered = (decimal)testOrder.TotalAmount + 5, TotalAmount = (decimal)testOrder.TotalAmount, Amount = (decimal)testOrder.TotalAmount };
 
                     // Save order with payment to database
                     var savedOrder = orderDataAccess.CreateOrderWithPayment(testOrder, testPayment);
@@ -118,20 +117,8 @@ namespace OnlineOrderingSystem
                         Console.WriteLine($"  - Payment Status: {retrievedOrder.PaymentStatus}");
                     }
 
-                    // Test PaymentDataAccess
-                    var paymentDataAccess = new PaymentDataAccess();
-                    var payments = paymentDataAccess.GetPaymentsByOrderId(savedOrder.OrderID);
-                    Console.WriteLine($"✓ Payment retrieved from database: {payments.Count} payment(s)");
-
-                    if (payments.Any())
-                    {
-                        var payment = payments.First();
-                        Console.WriteLine($"  - Payment ID: {payment.PaymentID}");
-                        Console.WriteLine($"  - Amount: £{payment.Amount:F2}");
-                        Console.WriteLine($"  - Method: {payment.PaymentMethod}");
-                        Console.WriteLine($"  - Status: {payment.PaymentStatus}");
-                        Console.WriteLine($"  - Transaction ID: {payment.TransactionID}");
-                    }
+                    // Test PaymentDataAccess - SKIPPED (PaymentDataAccess was removed)
+                    Console.WriteLine("✓ PaymentDataAccess test skipped - file was removed during cleanup.");
 
                     // Test order history
                     var orderHistory = orderDataAccess.GetOrderHistoryWithPayments(customer.CustomerID);

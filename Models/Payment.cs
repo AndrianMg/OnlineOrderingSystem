@@ -10,7 +10,7 @@ namespace OnlineOrderingSystem.Models
         public int PaymentID { get; set; }
         public int OrderID { get; set; }
         public int CustomerID { get; set; }
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
         public string PaymentMethod { get; set; } = string.Empty;
         public string PaymentStatus { get; set; } = string.Empty;
         public DateTime PaymentDate { get; set; }
@@ -37,7 +37,7 @@ namespace OnlineOrderingSystem.Models
         /// <returns>Payment details as string</returns>
         public virtual string GetPaymentDetails()
         {
-            return $"Payment ID: {PaymentID}, Amount: ${Amount:F2}, Status: {PaymentStatus}, Method: {PaymentMethod}";
+            return $"Payment ID: {PaymentID}, Amount: {Amount:C}, Status: {PaymentStatus}, Method: {PaymentMethod}";
         }
 
         /// <summary>
@@ -45,45 +45,6 @@ namespace OnlineOrderingSystem.Models
         /// </summary>
         /// <returns>True if payment is valid, false otherwise</returns>
         public abstract bool ValidatePayment();
-
-        /// <summary>
-        /// Sets the payment amount
-        /// </summary>
-        /// <param name="amount">The amount to set</param>
-        public void SetAmount(double amount)
-        {
-            if (amount < 0)
-            {
-                throw new ArgumentException("Amount cannot be negative");
-            }
-            Amount = amount;
-        }
-
-        /// <summary>
-        /// Gets the payment amount
-        /// </summary>
-        /// <returns>The payment amount</returns>
-        public double GetAmount()
-        {
-            return Amount;
-        }
-
-        /// <summary>
-        /// Sets the payment status
-        /// </summary>
-        /// <param name="status">The status to set</param>
-        public void SetPaymentStatus(string status)
-        {
-            PaymentStatus = status;
-        }
-
-        /// <summary>
-        /// Gets the payment status</summary>
-        /// <returns>The payment status</returns>
-        public string GetPaymentStatus()
-        {
-            return PaymentStatus;
-        }
     }
 
     /// <summary>
@@ -94,7 +55,7 @@ namespace OnlineOrderingSystem.Models
         public int PaymentID { get; set; }
         public int OrderID { get; set; }
         public int CustomerID { get; set; }
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
         public string PaymentMethod { get; set; } = string.Empty;
         public string PaymentStatus { get; set; } = string.Empty;
         public DateTime PaymentDate { get; set; }
@@ -106,7 +67,7 @@ namespace OnlineOrderingSystem.Models
         public int? CVV { get; set; }
         public string ChequeNumber { get; set; } = string.Empty;
         public string BankName { get; set; } = string.Empty;
-        public double AmountTendered { get; set; }
+        public decimal AmountTendered { get; set; }
 
         /// <summary>
         /// Creates a PaymentEntity from a Payment object
@@ -154,18 +115,3 @@ namespace OnlineOrderingSystem.Models
 
 
 
-public abstract class Payment
-{
-    // Common properties all payment types share
-    public int PaymentID { get; set; }
-    public double Amount { get; set; }
-    public string PaymentStatus { get; set; }
-    public DateTime PaymentDate { get; set; }
-
-    // Abstract methods - each payment type MUST implement these
-    public abstract void ProcessPayment();
-    public abstract bool ValidatePayment();
-
-    // Virtual methods - can be overridden by derived classes
-    public virtual string PaymentDetails() { /* implementation */ }
-}

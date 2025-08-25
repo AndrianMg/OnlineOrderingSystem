@@ -1,90 +1,49 @@
 using System;
+using OnlineOrderingSystem.Models;
 
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Represents check payment processing
+    /// Check payment processing
     /// </summary>
     public class Check : Payment
     {
         public string ChequeNumber { get; set; } = string.Empty;
         public string BankName { get; set; } = string.Empty;
-        public bool IsCleared { get; set; }
+        public DateTime CheckDate { get; set; }
 
-        /// <summary>
-        /// Processes the check payment
-        /// </summary>
+        public Check()
+        {
+            PaymentMethod = "Check";
+            PaymentStatus = "Pending";
+            CheckDate = DateTime.Now;
+        }
+
         public override void ProcessPayment()
         {
-            if (ValidatePayment())
+            if (!ValidatePayment())
             {
-                PaymentStatus = "Pending";
-                PaymentDate = DateTime.Now;
-                Console.WriteLine($"Check payment processed. Check number: {ChequeNumber}");
+                throw new InvalidOperationException("Check validation failed");
             }
-            else
-            {
-                PaymentStatus = "Failed";
-                Console.WriteLine("Check payment failed validation.");
-            }
+
+            // Simulate check processing
+            PaymentStatus = "Completed";
+            PaymentDate = DateTime.Now;
+            Console.WriteLine($"Check payment processed. Check #{ChequeNumber} from {BankName}. Amount: {Amount:C}");
         }
 
-        /// <summary>
-        /// Validates the check payment
-        /// </summary>
-        /// <returns>True if check is valid, false otherwise</returns>
-        public bool ValidateCheque()
-        {
-            if (string.IsNullOrWhiteSpace(ChequeNumber))
-            {
-                Console.WriteLine("Check number is required.");
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(BankName))
-            {
-                Console.WriteLine("Bank name is required.");
-                return false;
-            }
-
-            if (GetAmount() <= 0)
-            {
-                Console.WriteLine("Invalid check amount.");
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Validates the payment (implements abstract method)
-        /// </summary>
-        /// <returns>True if payment is valid, false otherwise</returns>
         public override bool ValidatePayment()
         {
-            return ValidateCheque();
-        }
+            if (string.IsNullOrWhiteSpace(ChequeNumber))
+                return false;
 
-        /// <summary>
-        /// Gets the payment details for check payment
-        /// </summary>
-        /// <returns>Check payment details</returns>
-        public override string GetPaymentDetails()
-        {
-            return $"Check Payment - Check Number: {ChequeNumber}, Bank: {BankName}, Amount: ${GetAmount():F2}, Cleared: {IsCleared}";
-        }
+            if (string.IsNullOrWhiteSpace(BankName))
+                return false;
 
-        /// <summary>
-        /// Updates the payment status
-        /// </summary>
-        /// <param name="newStatus">The new status</param>
-        public void UpdatePaymentStatus(string newStatus)
-        {
-            PaymentStatus = newStatus;
-            if (newStatus == "Cleared")
-            {
-                IsCleared = true;
-            }
+            if (CheckDate > DateTime.Now)
+                return false;
+
+            return Amount > 0;
         }
     }
 } 

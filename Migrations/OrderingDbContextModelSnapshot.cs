@@ -17,10 +17,10 @@ namespace OnlineOrderingSystem.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.35")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("OnlineOrderingSystem.Models.Cart", b =>
                 {
@@ -28,7 +28,7 @@ namespace OnlineOrderingSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartID"));
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
@@ -44,7 +44,7 @@ namespace OnlineOrderingSystem.Migrations
 
                     b.HasKey("CartID");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("OnlineOrderingSystem.Models.CartItem", b =>
@@ -62,7 +62,7 @@ namespace OnlineOrderingSystem.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("OnlineOrderingSystem.Models.Customer", b =>
@@ -71,7 +71,7 @@ namespace OnlineOrderingSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerID"));
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -116,7 +116,7 @@ namespace OnlineOrderingSystem.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("OnlineOrderingSystem.Models.CustomizationOption", b =>
@@ -125,7 +125,7 @@ namespace OnlineOrderingSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("AdditionalCost")
                         .HasColumnType("decimal(10,2)");
@@ -157,7 +157,7 @@ namespace OnlineOrderingSystem.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("CustomizationOptions");
+                    b.ToTable("CustomizationOptions", (string)null);
                 });
 
             modelBuilder.Entity("OnlineOrderingSystem.Models.Item", b =>
@@ -166,7 +166,7 @@ namespace OnlineOrderingSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AllergenInfo")
                         .IsRequired()
@@ -236,7 +236,7 @@ namespace OnlineOrderingSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("OnlineOrderingSystem.Models.Order", b =>
@@ -245,7 +245,7 @@ namespace OnlineOrderingSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"));
 
                     b.Property<DateTime?>("ActualDeliveryTime")
                         .HasColumnType("datetime2");
@@ -316,7 +316,7 @@ namespace OnlineOrderingSystem.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("OnlineOrderingSystem.Models.OrderDetail", b =>
@@ -325,7 +325,7 @@ namespace OnlineOrderingSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailID"));
 
                     b.Property<string>("AllergenInfo")
                         .IsRequired()
@@ -376,7 +376,7 @@ namespace OnlineOrderingSystem.Migrations
 
                     b.HasIndex("OrderID");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("OnlineOrderingSystem.Models.OrderStatusUpdate", b =>
@@ -385,7 +385,7 @@ namespace OnlineOrderingSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -407,7 +407,7 @@ namespace OnlineOrderingSystem.Migrations
 
                     b.HasIndex("OrderID");
 
-                    b.ToTable("OrderStatusUpdates");
+                    b.ToTable("OrderStatusUpdates", (string)null);
                 });
 
             modelBuilder.Entity("OnlineOrderingSystem.Models.Payment", b =>
@@ -416,7 +416,7 @@ namespace OnlineOrderingSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentID"));
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(10,2)");
@@ -456,7 +456,7 @@ namespace OnlineOrderingSystem.Migrations
 
                     b.HasKey("PaymentID");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
 
                     b.HasDiscriminator<string>("PaymentType").HasValue("Payment");
                 });

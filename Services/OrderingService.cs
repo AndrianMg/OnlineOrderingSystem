@@ -154,12 +154,12 @@ namespace OnlineOrderingSystem.Services
                 // Use strategy pattern - different payment types have different processing logic
                 payment.ProcessPayment();
                 
-                var success = payment.GetPaymentStatus() == "Completed";
+                var success = payment.PaymentStatus == "Completed";
                 _globalClass.LogEvent("Payment", $"Payment processed: {success}");
 
                 if (success)
                 {
-                    _globalClass.SendNotification($"Payment of ${payment.GetAmount():F2} processed successfully", "admin@example.com");
+                    _globalClass.SendNotification($"Payment of {payment.Amount:C} processed successfully", "admin@example.com");
                 }
 
                 return success;
@@ -208,17 +208,16 @@ namespace OnlineOrderingSystem.Services
         /// <returns>The payment object</returns>
         public Payment CreatePayment(string paymentMethod, double amount)
         {
+            var decimalAmount = (decimal)amount;
             switch (paymentMethod.ToLower())
             {
                 case "cash":
-                    return new Cash { AmountTendered = amount, TotalAmount = amount };
+                    return new Cash { AmountTendered = decimalAmount, TotalAmount = decimalAmount, Amount = decimalAmount };
                 case "credit":
-                    var credit = new Credit { CardNumber = "1234567890123456", CardHolderName = "Test User", ExpiryDate = DateTime.Now.AddYears(1), CVV = 123 };
-                    credit.SetAmount(amount);
+                    var credit = new Credit { CardNumber = "1234567890123456", CardHolderName = "Test User", ExpiryDate = DateTime.Now.AddYears(1), CVV = 123, Amount = decimalAmount };
                     return credit;
                 case "check":
-                    var check = new Check { ChequeNumber = "123456", BankName = "Test Bank" };
-                    check.SetAmount(amount);
+                    var check = new Check { ChequeNumber = "123456", BankName = "Test Bank", Amount = decimalAmount };
                     return check;
                 default:
                     throw new ArgumentException($"Unsupported payment method: {paymentMethod}");

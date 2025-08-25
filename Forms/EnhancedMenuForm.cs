@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using OnlineOrderingSystem.Models;
 using OnlineOrderingSystem.Database;
+using OnlineOrderingSystem.Services;
 using System.Linq;
 
 namespace OnlineOrderingSystem.Forms
@@ -23,6 +24,13 @@ namespace OnlineOrderingSystem.Forms
         private Label lblLogo;
         private Label lblTagline;
         
+        // Notification controls
+        private Panel notificationPanel;
+        private ListBox lstNotifications;
+        private Label lblNotificationTitle;
+        private Button btnClearNotifications;
+        private Button btnNotificationStats;
+        
         // Data management
         private Cart currentCart;
         private List<Item> allItems;
@@ -30,6 +38,9 @@ namespace OnlineOrderingSystem.Forms
         private Dictionary<string, List<Item>> itemsByCategory;
         private MenuDataAccess menuDataAccess;
         private int customerId;
+        
+        // Services
+        private NotificationService notificationService;
 
         // Color scheme
         private Color primaryBlue = Color.FromArgb(52, 152, 219);
@@ -47,7 +58,9 @@ namespace OnlineOrderingSystem.Forms
             this.customerId = customerId;
             InitializeComponent();
             menuDataAccess = new MenuDataAccess();
+            notificationService = NotificationService.GetInstance();
             LoadMenuItems();
+            InitializeNotifications();
         }
 
         /// <summary>
@@ -167,20 +180,11 @@ namespace OnlineOrderingSystem.Forms
                 lblTitle, lblSearch, txtSearch, btnBack, btnViewCart, btnCheckout
             });
 
-            // Category tabs - positioned above the menu list
-            categoryTabs = new TabControl
-            {
-                Location = new Point(50, 220),
-                Size = new Size(1000, 40),
-                Font = new Font("Segoe UI", 9),
-                BackColor = Color.White
-            };
-
             // Menu list - positioned below the category tabs
             lstMenu = new ListBox
             {
                 Location = new Point(50, 270),
-                Size = new Size(1000, 450),
+                Size = new Size(800, 450), // Reduced from 1000 to 800 to make room for notification panel
                 Font = new Font("Segoe UI", 11),
                 BackColor = Color.White,
                 ForeColor = darkGray,
@@ -189,12 +193,21 @@ namespace OnlineOrderingSystem.Forms
                 Enabled = true
             };
 
-            // Cart preview panel - aligned with the menu list
-            // Removed cartPreviewPanel as per edit hint
+            // Category tabs - positioned above the menu list
+            categoryTabs = new TabControl
+            {
+                Location = new Point(50, 220),
+                Size = new Size(800, 40), // Reduced from 1000 to 800 to match menu width
+                Font = new Font("Segoe UI", 9),
+                BackColor = Color.White
+            };
+
+            // Notification panel - positioned to the right of the menu
+            CreateNotificationPanel();
 
             // Add all controls to the card panel
             cardPanel.Controls.AddRange(new Control[] {
-                lblLogo, lblTagline, headerPanel, categoryTabs, lstMenu
+                lblLogo, lblTagline, headerPanel, categoryTabs, lstMenu, notificationPanel
             });
 
             // Add card panel to form
@@ -793,7 +806,7 @@ namespace OnlineOrderingSystem.Forms
         }
 
         /// <summary>
-        /// Handles checkout button click - opens checkout form
+        /// Handles checkout button click
         /// </summary>
         /// <param name="sender">The checkout button</param>
         /// <param name="e">Event arguments</param>
@@ -806,7 +819,215 @@ namespace OnlineOrderingSystem.Forms
             }
 
             var checkoutForm = new CheckoutForm(currentCart, customerId);
+            checkoutForm.OrderPlacedEvent += CheckoutForm_OrderPlaced; // Subscribe to order placed event
             checkoutForm.ShowDialog();
+        }
+
+        /// <summary>
+        /// Handles the event when an order is placed in checkout
+        /// </summary>
+        /// <param name="order">The placed order</param>
+        private void CheckoutForm_OrderPlaced(Order order)
+        {
+            if (order != null)
+            {
+                // Start monitoring the order for status updates
+                StartMonitoringOrder(order, $"customer{customerId}@example.com");
+                
+                // Show success message
+                ShowAlert($"Order #{order.OrderID} placed successfully! Monitoring for updates...", false);
+                
+                // Refresh the notification display
+                DisplayNotifications();
+            }
+        }
+
+        /// <summary>
+        /// Creates and configures the notification panel
+        /// </summary>
+        private void CreateNotificationPanel()
+        {
+            notificationPanel = new Panel
+            {
+                Location = new Point(850, 270), // Position it to the right of the menu
+                Size = new Size(500, 450), // Adjust size as needed
+                BackColor = Color.FromArgb(255, 255, 240), // Light yellow background to make it stand out
+                BorderStyle = BorderStyle.Fixed3D, // Add 3D border to make it more visible
+                Visible = true,
+                Enabled = true
+            };
+
+            // Add a colored border around the notification panel
+            notificationPanel.Paint += (sender, e) => {
+                using (var pen = new Pen(Color.FromArgb(52, 152, 219), 3)) // Blue border
+                {
+                    e.Graphics.DrawRectangle(pen, 0, 0, notificationPanel.Width - 1, notificationPanel.Height - 1);
+                }
+            };
+
+            // Notification title with background
+            lblNotificationTitle = new Label
+            {
+                Text = "🔔 LIVE ORDER UPDATES 🔔",
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(52, 152, 219), // Blue background
+                TextAlign = ContentAlignment.MiddleCenter,
+                Location = new Point(10, 10),
+                Size = new Size(480, 30)
+            };
+
+            // Clear notifications button
+            btnClearNotifications = CreateStyledButton("🗑️ Clear All", warningRed, new Point(10, 45), new Size(480, 40));
+            btnClearNotifications.Click += BtnClearNotifications_Click;
+
+            // Notification stats button
+            btnNotificationStats = CreateStyledButton("📊 Show Stats", primaryBlue, new Point(10, 90), new Size(480, 40));
+            btnNotificationStats.Click += BtnNotificationStats_Click;
+
+            // Demo status update button
+            var btnDemoUpdate = CreateStyledButton("🎮 Demo Status Update", successGreen, new Point(10, 135), new Size(480, 40));
+            btnDemoUpdate.Click += BtnDemoUpdate_Click;
+
+            // Notification list
+            lstNotifications = new ListBox
+            {
+                Location = new Point(10, 185),
+                Size = new Size(480, 255),
+                Font = new Font("Segoe UI", 10),
+                BackColor = Color.White,
+                ForeColor = darkGray,
+                BorderStyle = BorderStyle.FixedSingle,
+                Visible = true,
+                Enabled = true
+            };
+
+            // Add all controls to the notification panel
+            notificationPanel.Controls.AddRange(new Control[] {
+                lblNotificationTitle, btnClearNotifications, btnNotificationStats, btnDemoUpdate, lstNotifications
+            });
+        }
+
+        /// <summary>
+        /// Handles clear notifications button click
+        /// </summary>
+        /// <param name="sender">The clear notifications button</param>
+        /// <param name="e">Event arguments</param>
+        private void BtnClearNotifications_Click(object sender, EventArgs e)
+        {
+            lstNotifications.Items.Clear();
+            ShowAlert("All notifications cleared!", false);
+        }
+
+        /// <summary>
+        /// Handles notification stats button click
+        /// </summary>
+        /// <param name="sender">The notification stats button</param>
+        /// <param name="e">Event arguments</param>
+        private void BtnNotificationStats_Click(object sender, EventArgs e)
+        {
+            var stats = notificationService.GetNotificationStats();
+            MessageBox.Show(stats, "Notification Statistics", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Handles demo status update button click
+        /// </summary>
+        /// <param name="sender">The demo status update button</param>
+        /// <param name="e">Event arguments</param>
+        private void BtnDemoUpdate_Click(object sender, EventArgs e)
+        {
+            // Simulate an order status update for a random order
+            var orders = notificationService.GetMonitoredOrders();
+            if (orders.Count > 0)
+            {
+                var randomOrder = orders[new Random().Next(orders.Count)];
+                var newStatus = randomOrder.OrderStatus switch
+                {
+                    "Preparing" => "Ready for Pickup",
+                    "Ready for Pickup" => "Completed",
+                    "Completed" => "Preparing",
+                    _ => "Preparing" // Default to preparing
+                };
+                notificationService.UpdateOrderStatus(randomOrder.OrderID, newStatus);
+                ShowAlert($"Simulated status update for Order #{randomOrder.OrderID}: {newStatus}", false);
+                DisplayNotifications();
+            }
+            else
+            {
+                ShowAlert("No orders to simulate update for.", true);
+            }
+        }
+
+        /// <summary>
+        /// Displays notifications in the notification listbox
+        /// </summary>
+        private void DisplayNotifications()
+        {
+            lstNotifications.Items.Clear();
+            
+            // Get monitored orders and display their status
+            var monitoredOrders = notificationService.GetMonitoredOrders();
+            if (monitoredOrders.Count > 0)
+            {
+                foreach (var order in monitoredOrders)
+                {
+                    var notificationText = $"Order #{order.OrderID}: {order.OrderStatus}";
+                    lstNotifications.Items.Add(notificationText);
+                }
+            }
+            else
+            {
+                lstNotifications.Items.Add("No active orders being monitored");
+            }
+            
+            lstNotifications.Refresh();
+        }
+
+        /// <summary>
+        /// Initializes notifications and starts the notification display loop
+        /// </summary>
+        private void InitializeNotifications()
+        {
+            // Debug: Ensure notification panel is visible
+            if (notificationPanel != null)
+            {
+                notificationPanel.Visible = true;
+                notificationPanel.BringToFront();
+                Console.WriteLine($"Notification panel created at: {notificationPanel.Location}, Size: {notificationPanel.Size}");
+            }
+            else
+            {
+                Console.WriteLine("ERROR: Notification panel is null!");
+            }
+
+            // Set up a timer to refresh notifications every 5 seconds
+            var notificationTimer = new System.Windows.Forms.Timer
+            {
+                Interval = 5000, // 5 seconds
+                Enabled = true
+            };
+            
+            notificationTimer.Tick += (sender, e) => {
+                DisplayNotifications();
+            };
+            
+            DisplayNotifications(); // Initial display
+        }
+
+        /// <summary>
+        /// Starts monitoring an order for status updates
+        /// </summary>
+        /// <param name="order">The order to monitor</param>
+        /// <param name="customerEmail">Customer email for notifications</param>
+        public void StartMonitoringOrder(Order order, string customerEmail = "customer@example.com")
+        {
+            if (order != null)
+            {
+                notificationService.StartMonitoringOrder(order, customerEmail);
+                DisplayNotifications();
+                ShowAlert($"Started monitoring Order #{order.OrderID}", false);
+            }
         }
     }
 } 

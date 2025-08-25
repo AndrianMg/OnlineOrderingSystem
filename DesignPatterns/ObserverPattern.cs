@@ -72,9 +72,17 @@ namespace OnlineOrderingSystem.DesignPatterns
     /// </summary>
     public class CustomerNotificationObserver : IOrderObserver
     {
-        private readonly string _customerEmail;
+        private string _customerEmail = "customer@example.com";
+        public int NotificationCount { get; private set; } = 0;
+
+        public CustomerNotificationObserver() { } // Default constructor
 
         public CustomerNotificationObserver(string customerEmail)
+        {
+            _customerEmail = customerEmail ?? throw new ArgumentNullException(nameof(customerEmail));
+        }
+
+        public void SetCustomerEmail(string customerEmail)
         {
             _customerEmail = customerEmail ?? throw new ArgumentNullException(nameof(customerEmail));
         }
@@ -83,6 +91,7 @@ namespace OnlineOrderingSystem.DesignPatterns
         {
             // Send email notification to customer
             SendEmailNotification(order);
+            NotificationCount++;
         }
 
         private void SendEmailNotification(Order order)
@@ -100,12 +109,15 @@ namespace OnlineOrderingSystem.DesignPatterns
     /// </summary>
     public class KitchenNotificationObserver : IOrderObserver
     {
+        public int NotificationCount { get; private set; } = 0;
+
         public void Update(Order order)
         {
             if (order.OrderStatus == "Preparing")
             {
                 NotifyKitchen(order);
             }
+            NotificationCount++;
         }
 
         private void NotifyKitchen(Order order)
@@ -120,12 +132,15 @@ namespace OnlineOrderingSystem.DesignPatterns
     /// </summary>
     public class DeliveryNotificationObserver : IOrderObserver
     {
+        public int NotificationCount { get; private set; } = 0;
+
         public void Update(Order order)
         {
             if (order.OrderStatus == "Ready for Delivery")
             {
                 NotifyDelivery(order);
             }
+            NotificationCount++;
         }
 
         private void NotifyDelivery(Order order)

@@ -16,11 +16,16 @@ namespace OnlineOrderingSystem.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<Payment> Payments { get; set; }
-        public DbSet<PaymentEntity> PaymentEntities { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<OrderStatusUpdate> OrderStatusUpdates { get; set; }
         public DbSet<CustomizationOption> CustomizationOptions { get; set; }
+
+        // Helper methods for the service layer
+        public List<Item> GetAllItems() => Items.ToList();
+        public List<Item> GetItemsByCategory(string category) => Items.Where(i => i.Category == category).ToList();
+        public void AddOrder(Order order) => Orders.Add(order);
+        public Customer? GetCustomerById(int customerID) => Customers.Find(customerID);
+        public List<Order> GetOrdersByCustomer(int customerID) => Orders.Where(o => o.CustomerID == customerID).ToList();
 
         // Parameterless constructor for EF Core
         public OrderingDbContext()
@@ -137,33 +142,6 @@ namespace OnlineOrderingSystem.Data
                 entity.Property(e => e.Timestamp).IsRequired();
             });
 
-            // Configure PaymentEntity for database storage
-            modelBuilder.Entity<PaymentEntity>(entity =>
-            {
-                entity.HasKey(e => e.PaymentID);
-                entity.Property(e => e.Amount).HasColumnType("decimal(10,2)");
-                entity.Property(e => e.PaymentMethod).HasMaxLength(50);
-                entity.Property(e => e.PaymentStatus).HasMaxLength(50);
-                entity.Property(e => e.PaymentDetails).HasMaxLength(500);
-                entity.Property(e => e.TransactionID).HasMaxLength(100);
-                entity.Property(e => e.CardNumber).HasMaxLength(20);
-                entity.Property(e => e.CardHolderName).HasMaxLength(100);
-                entity.Property(e => e.ChequeNumber).HasMaxLength(50);
-                entity.Property(e => e.BankName).HasMaxLength(100);
-                entity.Property(e => e.AmountTendered).HasColumnType("decimal(10,2)");
-                
-                // Configure relationships
-                entity.HasOne<Order>()
-                      .WithMany()
-                      .HasForeignKey(p => p.OrderID)
-                      .OnDelete(DeleteBehavior.Cascade);
-                      
-                entity.HasOne<Customer>()
-                      .WithMany()
-                      .HasForeignKey(p => p.CustomerID)
-                      .OnDelete(DeleteBehavior.Restrict);
-            });
-
             // Configure CustomizationOption entity to ignore List<string> properties
             modelBuilder.Entity<CustomizationOption>(entity =>
             {
@@ -176,26 +154,6 @@ namespace OnlineOrderingSystem.Data
                 // Ignore the List<string> Choices property to prevent database mapping issues
                 entity.Ignore(e => e.Choices);
             });
-
-            // Configure derived payment types
-            modelBuilder.Entity<Cash>(entity =>
-            {
-                entity.Property(e => e.AmountTendered).HasColumnType("decimal(10,2)");
-                entity.Property(e => e.TotalAmount).HasColumnType("decimal(10,2)");
-                entity.Property(e => e.ChangeDue).HasColumnType("decimal(10,2)");
-            });
-
-            modelBuilder.Entity<Credit>(entity =>
-            {
-                entity.Property(e => e.CardNumber).HasMaxLength(20);
-                entity.Property(e => e.CardHolderName).HasMaxLength(100);
-            });
-
-            modelBuilder.Entity<Check>(entity =>
-            {
-                entity.Property(e => e.ChequeNumber).HasMaxLength(20);
-                entity.Property(e => e.BankName).HasMaxLength(100);
-            });
         }
 
         /// <summary>
@@ -207,7 +165,5 @@ namespace OnlineOrderingSystem.Data
             CustomerSeeder.Seed(this);
             SaveChanges();
         }
-
-        
     }
 } 

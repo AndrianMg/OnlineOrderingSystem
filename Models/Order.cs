@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq; // Added for .Sum() and .FirstOrDefault()
+using OnlineOrderingSystem.DesignPatterns;
 
 namespace OnlineOrderingSystem.Models
 {
@@ -31,6 +32,34 @@ namespace OnlineOrderingSystem.Models
         public bool IsDelivery { get; set; } = true;
         public string OrderNotes { get; set; } = string.Empty;
         public List<OrderStatusUpdate> StatusHistory { get; set; } = new List<OrderStatusUpdate>();
+
+        // Observer Pattern Implementation
+        private readonly List<IOrderObserver> _observers = new List<IOrderObserver>();
+
+        // Observer Pattern Methods
+        public void Attach(IOrderObserver observer)
+        {
+            if (observer != null && !_observers.Contains(observer))
+            {
+                _observers.Add(observer);
+            }
+        }
+
+        public void Detach(IOrderObserver observer)
+        {
+            if (observer != null)
+            {
+                _observers.Remove(observer);
+            }
+        }
+
+        private void Notify()
+        {
+            foreach (var observer in _observers)
+            {
+                observer.Update(this);
+            }
+        }
 
         /// <summary>
         /// Creates a new order from a customer's cart
@@ -138,6 +167,7 @@ namespace OnlineOrderingSystem.Models
         {
             OrderStatus = newStatus;
             AddStatusUpdate(newStatus, message);
+            Notify(); // Notify all observers of status change
         }
 
         /// <summary>

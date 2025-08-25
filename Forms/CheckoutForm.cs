@@ -22,7 +22,9 @@ namespace OnlineOrderingSystem.Forms
         private Button btnCancel;
         private Label lblAlert;
 
+        // Properties
         public bool OrderPlaced { get; private set; } = false;
+        public event Action<Order>? OrderPlacedEvent;
 
         public CheckoutForm(Cart cart, int customerId = 1)
         {
@@ -324,7 +326,7 @@ namespace OnlineOrderingSystem.Forms
                     if (cardForm.ShowDialog() == DialogResult.OK)
                     {
                         payment = cardForm.CardDetails;
-                        payment.SetAmount(total);
+                        payment.Amount = (decimal)total;
                     }
                     else
                     {
@@ -352,6 +354,10 @@ namespace OnlineOrderingSystem.Forms
                 if (savedOrder != null)
                 {
                     OrderPlaced = true;
+                    
+                    // Fire the OrderPlacedEvent
+                    OrderPlacedEvent?.Invoke(savedOrder);
+                    
                     ShowAlert("Order placed successfully! Your order is being prepared.", false);
                     
                     // Show order confirmation
@@ -377,13 +383,13 @@ namespace OnlineOrderingSystem.Forms
 
         private Payment CreatePayment(string paymentMethod, double amount)
         {
+            var decimalAmount = (decimal)amount;
             switch (paymentMethod.ToLower())
             {
                 case "cash on delivery":
-                    return new Cash { AmountTendered = amount + 10, TotalAmount = amount };
+                    return new Cash { AmountTendered = decimalAmount + 10, TotalAmount = decimalAmount, Amount = decimalAmount };
                 case "paypal":
-                    var check = new Check { ChequeNumber = "PAYPAL123", BankName = "PayPal" };
-                    check.SetAmount(amount);
+                    var check = new Check { ChequeNumber = "PAYPAL123", BankName = "PayPal", Amount = decimalAmount };
                     return check;
                 default:
                     throw new ArgumentException($"Unsupported payment method: {paymentMethod}");
@@ -395,7 +401,7 @@ namespace OnlineOrderingSystem.Forms
             try
             {
                 payment.ProcessPayment();
-                return payment.GetPaymentStatus() == "Completed";
+                return payment.PaymentStatus == "Completed";
             }
             catch
             {
