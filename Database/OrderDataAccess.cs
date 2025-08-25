@@ -37,7 +37,7 @@ namespace OnlineOrderingSystem.Database
                 {
                     context.SaveChanges();
                 }
-                catch (Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine($"Error saving order: {ex.Message}");
                     if (ex.InnerException != null)
@@ -74,8 +74,7 @@ namespace OnlineOrderingSystem.Database
 
                 return order;
             }
-        }
-
+        }
         /// <summary>
         /// Retrieves an order by ID with its order details
         /// </summary>
@@ -125,46 +124,6 @@ namespace OnlineOrderingSystem.Database
                     .Where(o => o.OrderStatus.ToLower() == status.ToLower())
                     .OrderBy(o => o.OrderDate)
                     .ToList();
-            }
-        }
-
-        /// <summary>
-        /// Updates an existing order
-        /// </summary>
-        /// <param name="order">The order to update</param>
-        /// <returns>True if successful, false otherwise</returns>
-        public bool UpdateOrder(Order order)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                // Update order items
-                foreach (var item in order.OrderItems)
-                {
-                    if (item.OrderDetailID == 0)
-                    {
-                        context.OrderDetails.Add(item);
-                    }
-                    else
-                    {
-                        context.OrderDetails.Update(item);
-                    }
-                }
-
-                // Update status history
-                foreach (var status in order.StatusHistory)
-                {
-                    if (status.Id == 0)
-                    {
-                        context.OrderStatusUpdates.Add(status);
-                    }
-                    else
-                    {
-                        context.OrderStatusUpdates.Update(status);
-                    }
-                }
-
-                context.Orders.Update(order);
-                return context.SaveChanges() > 0;
             }
         }
 
@@ -219,75 +178,12 @@ namespace OnlineOrderingSystem.Database
         }
 
         /// <summary>
-        /// Gets orders within a date range
-        /// </summary>
-        /// <param name="startDate">Start date</param>
-        /// <param name="endDate">End date</param>
-        /// <returns>List of orders within the date range</returns>
-        public List<Order> GetOrdersByDateRange(DateTime startDate, DateTime endDate)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                return context.Orders
-                    .Include(o => o.OrderItems)
-                    .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
-                    .OrderByDescending(o => o.OrderDate)
-                    .ToList();
-            }
-        }
-
-        /// <summary>
         /// Gets pending orders
         /// </summary>
         /// <returns>List of pending orders</returns>
         public List<Order> GetPendingOrders()
         {
             return GetOrdersByStatus("Pending");
-        }
-
-        /// <summary>
-        /// Gets completed orders
-        /// </summary>
-        /// <returns>List of completed orders</returns>
-        public List<Order> GetCompletedOrders()
-        {
-            return GetOrdersByStatus("Completed");
-        }
-
-        /// <summary>
-        /// Deletes an order by ID
-        /// </summary>
-        /// <param name="orderId">The order ID to delete</param>
-        /// <returns>True if successful, false otherwise</returns>
-        public bool DeleteOrder(int orderId)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                var order = context.Orders.Find(orderId);
-                if (order != null)
-                {
-                    context.Orders.Remove(order);
-                    return context.SaveChanges() > 0;
-                }
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets total sales revenue within a date range
-        /// </summary>
-        /// <param name="startDate">Start date</param>
-        /// <param name="endDate">End date</param>
-        /// <returns>Total sales revenue</returns>
-        public decimal GetTotalSales(DateTime startDate, DateTime endDate)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                return (decimal)context.Orders
-                    .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate && 
-                               o.OrderStatus == "Completed")
-                    .Sum(o => o.TotalAmount);
-            }
         }
 
         /// <summary>
@@ -346,4 +242,4 @@ namespace OnlineOrderingSystem.Database
         public Order Order { get; set; } = new();
         public PaymentEntity? Payment { get; set; }
     }
-} 
+}

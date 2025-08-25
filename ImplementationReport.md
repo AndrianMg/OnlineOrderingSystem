@@ -227,8 +227,8 @@ public class Cash : Payment
     public double ChangeDue { get; set; }
 
     // Inherited abstract method implementation
-    public override void ProcessPayment()
-    {
+    public override void ProcessPayment() 
+    { 
         if (ValidatePayment())
         {
             PaymentStatus = "Completed";
@@ -244,8 +244,8 @@ public class Cash : Payment
     }
 
     // Inherited abstract method implementation
-    public override bool ValidatePayment()
-    {
+    public override bool ValidatePayment() 
+    { 
         if (AmountTendered < TotalAmount)
         {
             Console.WriteLine("Insufficient cash tendered.");
@@ -364,9 +364,9 @@ public bool ProcessPayment(Payment payment)
         throw new ArgumentNullException(nameof(payment));
 
     try
-    {
-        // Polymorphic behavior - works with any payment type
-        payment.ProcessPayment();
+{
+    // Polymorphic behavior - works with any payment type
+    payment.ProcessPayment();
         
         var success = payment.GetPaymentStatus() == "Completed";
         _globalClass.LogEvent("Payment", $"Payment processed: {success}");
@@ -513,31 +513,69 @@ public class OrderingService : IOrderingService
 
 ### 3.3 Delegates and Lambda Expressions
 
-#### 3.3.1 Custom Delegates
-
-The application implements custom delegates for event handling, demonstrating advanced C# programming concepts:
+#### 
+3.3.1 Windows Forms Events and Built-in Delegates
+The application extensively uses Windows Forms events with built-in C# delegates, demonstrating proper event-driven programming:
 
 ```csharp
-public delegate void OrderEventHandler(Order order, string eventType);
-public delegate void PaymentEventHandler(Payment payment, bool success);
+// Real event handlers throughout all forms
+private void BtnCheckout_Click(object sender, EventArgs e)
+private void BtnRemoveItem_Click(object sender, EventArgs e)
+private void BtnUpdateQuantity_Click(object sender, EventArgs e)
+private void CategoryTabs_SelectedIndexChanged(object sender, EventArgs e)
+private void TxtSearch_TextChanged(object sender, EventArgs e)
+private void LstMenu_SelectedIndexChanged(object sender, EventArgs e)
+
+// Event setup methods in forms
+private void SetupEventHandlers()
+{
+    BtnCheckout.Click += BtnCheckout_Click;
+    BtnRemoveItem.Click += BtnRemoveItem_Click;
+    BtnUpdateQuantity.Click += BtnUpdateQuantity_Click;
+    CategoryTabs.SelectedIndexChanged += CategoryTabs_SelectedIndexChanged;
+    TxtSearch.TextChanged += TxtSearch_TextChanged;
+    LstMenu.SelectedIndexChanged += LstMenu_SelectedIndexChanged;
+}
 ```
 
-#### 3.3.2 Lambda Expressions
+#### 3.3.2 Lambda Expressions in Real Code
 
-Lambda expressions are used extensively for LINQ queries and event handling, showcasing modern C# programming practices:
+Lambda expressions are extensively used throughout the application for LINQ queries, Entity Framework configuration, and event handling:
 
 ```csharp
-// LINQ with lambda expressions
-var availableItems = items.Where(item => item.Available).ToList();
-var highValueOrders = orders.Where(order => order.TotalAmount > 50.0)
-                           .OrderByDescending(order => order.TotalAmount)
-                           .ToList();
+// LINQ with lambda expressions in TestMenuDatabase.cs
+var categories = allItems.Select(i => i.Category).Distinct().ToList();
 
-// Event handlers with lambda expressions
-OrderCreated += (order, eventType) =>
+// Entity Framework configuration with lambda expressions in OrderingDbContext.cs
+modelBuilder.Entity<Customer>(entity =>
 {
-    Console.WriteLine($"Order {order.OrderID} {eventType} at {DateTime.Now}");
-};
+    entity.HasKey(e => e.CustomerID);
+    entity.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
+    entity.Property(e => e.LastName).IsRequired().HasMaxLength(50);
+});
+
+// Database queries with lambda expressions in MenuDataAccess.cs
+return context.Items
+    .Where(item => item.Category.ToLower() == category.ToLower())
+    .ToList();
+
+// Database queries with lambda expressions in UserDataAccess.cs
+var customer = context.Customers
+    .FirstOrDefault(c => c.Email.ToLower() == email.ToLower());
+
+// Database queries with lambda expressions in OrderDataAccess.cs
+return context.Orders
+    .Include(o => o.OrderItems)
+    .Include(o => o.StatusHistory)
+    .Where(o => o.OrderStatus.ToLower() == status.ToLower())
+    .OrderBy(o => o.OrderDate)
+    .ToList();
+
+// Expression-bodied properties with lambda in CartForm.cs
+public int Quantity => (int)numQuantity.Value;
+
+// Lambda expressions in TestMenuDatabase.cs
+var categories = allItems.Select(i => i.Category).Distinct().ToList();
 ```
 
 #### 3.3.3 Functional Programming
@@ -803,11 +841,11 @@ if (result == DialogResult.Yes)
 }
 ```
 
-**Console-Based Test Execution:**
-- Dedicated console window for test output visibility
-- Professional test result presentation
+**File-Based Test Results:**
+- All test output is saved to `test_results.txt` for persistent logging
+- Professional test result presentation with structured formatting
 - Clear demonstration of testing methodologies
-- Seamless transition to main application
+- Seamless transition to main application with results summary
 
 ### 5.2 Custom Testing Framework Implementation
 
@@ -1038,27 +1076,78 @@ The application implements an integrated test execution system that allows users
 ```csharp
 private static void RunTestsInConsole()
 {
-    // Create a new console window for test output
-    AllocConsole();
-    
-    Console.WriteLine("=== Tasty Eats Online Ordering System - Testing Suite ===");
-    Console.WriteLine("Demonstrating Testing Methodologies and Results");
-    
     try
     {
+        // Write to file for debugging and persistent logging
+        var logPath = Path.Combine(Environment.CurrentDirectory, "test_results.txt");
+        File.WriteAllText(logPath, "=== Tasty Eats Online Ordering System - Testing Suite ===\n");
+        File.AppendAllText(logPath, "Demonstrating Testing Methodologies and Results\n");
+        File.AppendAllText(logPath, "=====================================================\n\n");
+
         // Initialize database for testing
-        InitializeDatabaseForTesting();
+        using (var context = new OrderingDbContext())
+        {
+            context.Database.EnsureCreated();
+            if (!context.Customers.Any())
+            {
+                context.SeedDatabase();
+            }
+        }
+
+        File.AppendAllText(logPath, "🔧 Database initialized for testing...\n\n");
+
+        // Run comprehensive database testing
+        File.AppendAllText(logPath, "RUNNING COMPREHENSIVE TESTING SUITE\n");
+        File.AppendAllText(logPath, new string('=', 50) + "\n");
         
-        // Run comprehensive testing suite
-        Console.WriteLine("RUNNING COMPREHENSIVE TESTING SUITE");
-        DatabaseDemo.RunDatabaseTest();
-        
+        // Capture console output by redirecting it to file
+        var originalOut = Console.Out;
+        using (var writer = new StringWriter())
+        {
+            Console.SetOut(writer);
+            try
+            {
+                DatabaseDemo.RunDatabaseTest();
+                File.AppendAllText(logPath, writer.ToString());
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+            }
+        }
+
         // Run focused menu testing
-        Console.WriteLine("RUNNING MENU DATABASE TESTING");
-        TestMenuDatabase.TestDatabaseItems();
+        File.AppendAllText(logPath, "\nRUNNING MENU DATABASE TESTING\n");
+        File.AppendAllText(logPath, new string('=', 50) + "\n");
         
-        Console.WriteLine("TESTING COMPLETED SUCCESSFULLY!");
-        Console.WriteLine("This demonstrates: Unit Testing, Integration Testing, System Testing, AAA Pattern, Test Results");
+        using (var writer = new StringWriter())
+        {
+            Console.SetOut(writer);
+            try
+            {
+                TestMenuDatabase.TestDatabaseItems();
+                File.AppendAllText(logPath, writer.ToString());
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+            }
+        }
+
+        // Show test results to user with summary
+        var testResults = File.ReadAllText(logPath);
+        MessageBox.Show(
+            $"Testing completed successfully!\n\n" +
+            $"✅ Unit Testing Implementation\n" +
+            $"✅ Integration Testing\n" +
+            $"✅ System Testing\n" +
+            $"✅ AAA Testing Pattern\n" +
+            $"✅ Test Results and Metrics\n\n" +
+            $"Test results have been written to:\n{logPath}\n\n" +
+            $"Click OK to continue to the main application.",
+            "Testing Completed Successfully",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
     }
     catch (Exception ex)
     {
@@ -1076,22 +1165,110 @@ private static void RunTestsInConsole()
 #### 5.7.2 Test Execution Features
 
 **Professional Test Presentation:**
-- **Dedicated Console Window**: Separate console for clear test output visibility
-- **Structured Test Flow**: Organized test execution with clear sections
-- **Real-Time Results**: Immediate feedback on test execution
-- **Professional Formatting**: Clean, readable test output presentation
+- **File-Based Logging**: All test output saved to `test_results.txt` for persistent logging
+- **Structured Test Flow**: Organized test execution with clear sections and formatting
+- **Comprehensive Results**: Complete test output captured and saved for review
+- **Professional Formatting**: Clean, readable test output with visual separators and emojis
 
 **User Experience:**
 - **Choice-Based Execution**: Users decide whether to run tests or proceed directly
-- **Seamless Integration**: Tests run within the same application context
+- **Results Summary**: MessageBox shows testing completion with key metrics
 - **Clear Transitions**: Smooth flow from testing to main application
 - **Professional Demo**: Ideal for demonstrating testing methodologies to stakeholders
 
 **Technical Implementation:**
-- **Windows API Integration**: Uses `AllocConsole()` and `FreeConsole()` for console management
-- **Exception Handling**: Comprehensive error handling during test execution
-- **Resource Management**: Proper cleanup of console resources
+- **File I/O Integration**: Uses `File.WriteAllText()` and `File.AppendAllText()` for persistent logging
+- **Console Output Redirection**: Captures console output using `StringWriter` and redirects to file
+- **Exception Handling**: Comprehensive error handling with separate error log files
 - **Database Integration**: Tests run against the actual application database
+- **Resource Management**: Proper cleanup of console output streams
+
+#### 5.7.3 Test Results File Structure
+
+The application generates a comprehensive `test_results.txt` file with the following structure:
+
+```
+=== Tasty Eats Online Ordering System - Testing Suite ===
+Demonstrating Testing Methodologies and Results
+=====================================================
+
+🔧 Database initialized for testing...
+
+RUNNING COMPREHENSIVE TESTING SUITE
+==================================================
+=== Online Ordering System - Database Test ===
+
+1. Testing Database Initialization...
+   - Items in database: 17
+   - Customers in database: 5
+   ✓ Database initialization successful
+
+2. Testing Menu Data Access...
+   - Retrieved 17 menu items
+   - Found 0 pizza items
+   - Found 17 available items
+   - Search for 'pizza' returned 2 results
+   ✓ Menu data access tests passed
+
+3. Testing User Data Access...
+   - Retrieved 5 customers
+   - Found customer by email: John Doe
+   - Email exists check: True
+   ✓ User data access tests passed
+
+4. Testing Order Data Access...
+   - Created test order #24
+   - Retrieved order: Order #24 - 1 items - £11.98 - Pending
+   - Found 16 orders for customer
+   - Found 10 pending orders
+   ✓ Order data access tests passed
+
+RUNNING MENU DATABASE TESTING
+==================================================
+=== Testing Menu Database ===
+Items count in database: 17
+
+==================================================
+TESTING COMPLETED SUCCESSFULLY!
+==================================================
+
+This demonstrates:
+✅ Unit Testing Implementation
+✅ Integration Testing
+✅ System Testing
+✅ AAA Testing Pattern
+✅ Test Results and Metrics
+
+Test results written to: [file path]
+```
+
+#### 5.7.4 Error Handling and Logging
+
+The testing framework includes comprehensive error handling with separate error logging:
+
+```csharp
+catch (Exception ex)
+{
+    var logPath = Path.Combine(Environment.CurrentDirectory, "test_error.txt");
+    File.WriteAllText(logPath, $"❌ ERROR during testing: {ex.Message}\n");
+    File.AppendAllText(logPath, $"Stack trace: {ex.StackTrace}\n");
+    
+    // Show error to user
+    MessageBox.Show(
+        $"❌ Error during testing: {ex.Message}\n\n" +
+        $"Error details have been written to:\n{logPath}\n\n" +
+        $"Click OK to continue to the main application.",
+        "Testing Error",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Error);
+}
+```
+
+**Error Handling Features:**
+- **Separate Error Logs**: Test errors saved to `test_error.txt` for debugging
+- **User-Friendly Messages**: Clear error information displayed to users
+- **Graceful Degradation**: Application continues to main form even if testing fails
+- **Debug Information**: Stack traces and detailed error information preserved
 
 ---
 
@@ -1140,7 +1317,7 @@ The "Tasty Eats" application demonstrates the following key features:
 - Consistent color scheme and typography
 
 #### 6.2.2 Event-Driven Architecture
-- Custom delegates and events
+- Windows Forms events and built-in delegates
 - Lambda expressions for event handling
 - Observer pattern for notifications
 - Proper event cleanup and memory management
@@ -1183,7 +1360,7 @@ The implementation successfully demonstrates advanced programming approaches thr
 - **Object-Oriented Programming**: Comprehensive use of encapsulation, inheritance, polymorphism, and abstraction
 - **Design Patterns**: Implementation of Strategy, Observer, and Singleton patterns
 - **Functional Programming**: Extensive use of LINQ, lambda expressions, and functional concepts
-- **Event-Driven Programming**: Custom delegates, events, and proper event handling
+- **Event-Driven Programming**: Windows Forms events, built-in delegates, and proper event handling
 
 #### 7.1.2 LO3: Refactoring Strategies
 
@@ -1357,7 +1534,7 @@ McConnell, S. (2004). *Code Complete: A Practical Handbook of Software Construct
 
 ---
 
-**Word Count**: 4,000+ words
+**Word Count**: 4,600+ words
 
 **Figures and Tables**: 5 tables, 15+ code examples
 

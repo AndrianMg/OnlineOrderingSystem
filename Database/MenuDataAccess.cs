@@ -39,19 +39,6 @@ namespace OnlineOrderingSystem.Database
         }
 
         /// <summary>
-        /// Retrieves a specific menu item by ID
-        /// </summary>
-        /// <param name="itemId">The ID of the item</param>
-        /// <returns>The menu item or null if not found</returns>
-        public Item? GetMenuItemById(int itemId)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                return context.Items.FirstOrDefault(item => item.Id == itemId);
-            }
-        }
-
-        /// <summary>
         /// Retrieves available menu items
         /// </summary>
         /// <returns>List of available menu items</returns>
@@ -79,67 +66,6 @@ namespace OnlineOrderingSystem.Database
             }
         }
 
-        /// <summary>
-        /// Adds a new menu item to the database
-        /// </summary>
-        /// <param name="item">The item to add</param>
-        /// <returns>The added item with its generated ID</returns>
-        public Item AddMenuItem(Item item)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                context.Items.Add(item);
-                context.SaveChanges();
-                return item;
-            }
-        }
-
-        /// <summary>
-        /// Updates an existing menu item
-        /// </summary>
-        /// <param name="item">The item to update</param>
-        /// <returns>True if successful, false otherwise</returns>
-        public bool UpdateMenuItem(Item item)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                context.Items.Update(item);
-                return context.SaveChanges() > 0;
-            }
-        }
-
-        /// <summary>
-        /// Deletes a menu item by ID
-        /// </summary>
-        /// <param name="itemId">The ID of the item to delete</param>
-        /// <returns>True if successful, false otherwise</returns>
-        public bool DeleteMenuItem(int itemId)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                var item = context.Items.Find(itemId);
-                if (item != null)
-                {
-                    context.Items.Remove(item);
-                    return context.SaveChanges() > 0;
-                }
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets menu items by dietary requirements
-        /// </summary>
-        /// <param name="dietaryRequirement">The dietary requirement to filter by</param>
-        /// <returns>List of items matching the dietary requirement</returns>
-        public List<Item> GetMenuItemsByDietaryRequirement(string dietaryRequirement)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                return context.Items
-                    .Where(item => item.DietaryTags.Contains(dietaryRequirement))
-                    .ToList();
-            }
-        }
+        
     }
 } 

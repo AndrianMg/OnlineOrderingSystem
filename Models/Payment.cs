@@ -150,4 +150,22 @@ namespace OnlineOrderingSystem.Models
             return entity;
         }
     }
-} 
+}
+
+
+
+public abstract class Payment
+{
+    // Common properties all payment types share
+    public int PaymentID { get; set; }
+    public double Amount { get; set; }
+    public string PaymentStatus { get; set; }
+    public DateTime PaymentDate { get; set; }
+
+    // Abstract methods - each payment type MUST implement these
+    public abstract void ProcessPayment();
+    public abstract bool ValidatePayment();
+
+    // Virtual methods - can be overridden by derived classes
+    public virtual string PaymentDetails() { /* implementation */ }
+}

@@ -4,7 +4,6 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using OnlineOrderingSystem.Forms;
 using OnlineOrderingSystem.Models;
-using System.Threading; // Added for Thread
 
 namespace OnlineOrderingSystem.Forms
 {
@@ -347,48 +346,6 @@ namespace OnlineOrderingSystem.Forms
             historyForm.ShowDialog();
         }
 
-        /// <summary>
-        /// Runs the OrderEventHandler demonstration
-        /// </summary>
-        private void RunEventDemo()
-        {
-            try
-            {
-                // Show demo in a separate thread to avoid blocking the UI
-                var demoThread = new Thread(() =>
-                {
-                    try
-                    {
-                        // Demo currently disabled during rollback
-                        // DelegatesAndEvents.OrderEventHandlerDemo.RunDemo();
-                        
-                        // Show completion message in UI thread
-                        this.Invoke(() =>
-                        {
-                            MessageBox.Show("Event Demo completed! Check the console for detailed output.", 
-                                "Demo Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Invoke(() =>
-                        {
-                            MessageBox.Show($"Demo error: {ex.Message}", 
-                                "Demo Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        });
-                    }
-                });
-                
-                demoThread.Start();
-                
-                MessageBox.Show("Event Demo started! Check the console for output.", 
-                    "Demo Started", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to start demo: {ex.Message}", 
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+
     }
 } 

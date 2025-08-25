@@ -40,19 +40,6 @@ namespace OnlineOrderingSystem.Database
         }
 
         /// <summary>
-        /// Retrieves a payment by ID
-        /// </summary>
-        /// <param name="paymentId">The payment ID</param>
-        /// <returns>The payment or null if not found</returns>
-        public PaymentEntity? GetPaymentById(int paymentId)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                return context.PaymentEntities.FirstOrDefault(p => p.PaymentID == paymentId);
-            }
-        }
-
-        /// <summary>
         /// Retrieves all payments for a specific order
         /// </summary>
         /// <param name="orderId">The order ID</param>
@@ -81,36 +68,6 @@ namespace OnlineOrderingSystem.Database
                     .Where(p => p.CustomerID == customerId)
                     .OrderByDescending(p => p.PaymentDate)
                     .ToList();
-            }
-        }
-
-        /// <summary>
-        /// Retrieves all payments with a specific status
-        /// </summary>
-        /// <param name="status">The payment status to filter by</param>
-        /// <returns>List of payments with the specified status</returns>
-        public List<PaymentEntity> GetPaymentsByStatus(string status)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                return context.PaymentEntities
-                    .Where(p => p.PaymentStatus.ToLower() == status.ToLower())
-                    .OrderByDescending(p => p.PaymentDate)
-                    .ToList();
-            }
-        }
-
-        /// <summary>
-        /// Updates an existing payment
-        /// </summary>
-        /// <param name="payment">The payment to update</param>
-        /// <returns>True if successful, false otherwise</returns>
-        public bool UpdatePayment(PaymentEntity payment)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                context.PaymentEntities.Update(payment);
-                return context.SaveChanges() > 0;
             }
         }
 
@@ -179,24 +136,6 @@ namespace OnlineOrderingSystem.Database
             }
         }
 
-        /// <summary>
-        /// Deletes a payment (for administrative purposes)
-        /// </summary>
-        /// <param name="paymentId">The payment ID to delete</param>
-        /// <returns>True if successful, false otherwise</returns>
-        public bool DeletePayment(int paymentId)
-        {
-            using (var context = new OrderingDbContext())
-            {
-                var payment = context.PaymentEntities.FirstOrDefault(p => p.PaymentID == paymentId);
-                if (payment != null)
-                {
-                    context.PaymentEntities.Remove(payment);
-                    return context.SaveChanges() > 0;
-                }
-                return false;
-            }
-        }
     }
 
     /// <summary>
