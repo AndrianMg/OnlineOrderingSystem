@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OnlineOrderingSystem.Models;
 using OnlineOrderingSystem.Data;
+using OnlineOrderingSystem.Services;
 
 namespace OnlineOrderingSystem.Services
 {
@@ -107,6 +108,10 @@ namespace OnlineOrderingSystem.Services
 
                 // Add order to context
                 _context.AddOrder(order);
+
+                // Register order for notification monitoring
+                var notificationService = NotificationService.GetInstance();
+                notificationService.StartMonitoringOrder(order, customer.Email);
 
                 _globalClass.LogEvent("Order", $"Order {order.OrderID} placed by customer {customerID}");
 

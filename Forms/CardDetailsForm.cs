@@ -279,7 +279,7 @@ namespace OnlineOrderingSystem.Forms
                 var masked = "";
                 for (int i = 0; i < text.Length; i++)
                 {
-                    if (i > 0 && i % 4 == 0)
+                    if (i > 0 && i % 3 == 0) 
                     {
                         masked += " ";
                     }
@@ -327,13 +327,13 @@ namespace OnlineOrderingSystem.Forms
                 txtCVV.Focus();
             }
         }
-
+        // Ensure CVV is numeric
         private void TxtCVV_TextChanged(object sender, EventArgs e)
         {
             var text = txtCVV.Text;
             if (!int.TryParse(text, out _) && text.Length > 0)
             {
-                txtCVV.Text = text.Substring(0, text.Length - 1);
+                txtCVV.Text = text.Substring(0, text.Length - 1); // 
                 txtCVV.SelectionStart = txtCVV.Text.Length;
             }
         }
@@ -418,7 +418,7 @@ namespace OnlineOrderingSystem.Forms
             // Validate CVV
             if (txtCVV.Text.Length < 3 || !int.TryParse(txtCVV.Text, out _))
             {
-                ShowAlert("Please enter a valid CVV (3-4 digits)", true);
+                ShowAlert("Please enter a valid CVV (3 digits)", true);
                 txtCVV.Focus();
                 return false;
             }

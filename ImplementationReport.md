@@ -1164,7 +1164,7 @@ private static void RunTestsInConsole()
     {
         Console.WriteLine($"ERROR during testing: {ex.Message}");
     }
-    
+
     Console.WriteLine("Press any key to continue to the main application...");
     Console.ReadKey();
     

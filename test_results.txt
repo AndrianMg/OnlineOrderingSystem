@@ -10,7 +10,7 @@ RUNNING COMPREHENSIVE TESTING SUITE
 
 1. Testing Database Initialization...
    - Items in database: 17
-   - Customers in database: 5
+   - Customers in database: 6
    ✓ Database initialization successful
 
 2. Testing Menu Data Access...
@@ -25,24 +25,24 @@ RUNNING COMPREHENSIVE TESTING SUITE
    ✓ Menu data access tests passed
 
 3. Testing User Data Access...
-   - Retrieved 5 customers
+   - Retrieved 6 customers
    - Found customer by email: John Doe
    - Email exists check: True
    - Sample customer: John Doe
      Email: john@example.com
      Address: 123 Main St, London, UK
      Preferred payment: Credit
-     Order history count: 15
+     Order history count: 28
    ✓ User data access tests passed
 
 4. Testing Order Data Access...
-   - Created test order #24
+   - Created test order #48
      Customer: John Doe
      Items: 1
      Total: £11.98
-   - Retrieved order: Order #24 - 1 items - £11.98 - Pending
-   - Found 16 orders for customer
-   - Found 10 pending orders
+   - Retrieved order: Order #48 - 1 items - £11.98 - Pending
+   - Found 29 orders for customer
+   - Found 22 pending orders
    - Order status updated: True
    ✓ Order data access tests passed
 
