@@ -4,7 +4,12 @@ using OnlineOrderingSystem.Models;
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Cash payment processing
+    /// Cash payment processing implementation.
+    /// 
+    /// Demonstrates:
+    /// - Concrete implementation of Payment abstract class
+    /// - Polymorphism in payment processing
+    /// - Business logic for cash transactions
     /// </summary>
     public class Cash : Payment
     {

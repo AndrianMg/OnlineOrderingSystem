@@ -5,7 +5,15 @@ using System.Linq; // Added for FirstOrDefault
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Represents a customer in the online ordering system
+    /// Represents a customer in the online ordering system.
+    /// 
+    /// Demonstrates:
+    /// - Entity pattern for user management
+    /// - Business logic for customer operations
+    /// - Data validation and authentication
+    /// - Relationship management with orders
+    /// 
+    /// Note: This is demonstration code - not actively used in the current application.
     /// </summary>
     public class Customer
     {

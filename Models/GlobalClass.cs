@@ -4,7 +4,15 @@ using System.Collections.Generic;
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Singleton class for global system configuration and utilities
+    /// Singleton class for global system configuration and utilities.
+    /// 
+    /// Demonstrates:
+    /// - Singleton Pattern for global access
+    /// - Configuration management
+    /// - Logging and database connection management
+    /// - Thread-safe singleton implementation
+    /// 
+    /// Note: This is demonstration code - not actively used in the current application.
     /// </summary>
     public class GlobalClass
     {

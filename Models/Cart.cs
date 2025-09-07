@@ -5,8 +5,15 @@ using System.Linq;
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Represents a shopping cart for the online ordering system
-    /// Manages a collection of items that a customer wants to purchase
+    /// Represents a shopping cart for the online ordering system.
+    /// 
+    /// Demonstrates:
+    /// - Collection management patterns
+    /// - Business logic for cart operations
+    /// - Data validation and calculation
+    /// - Legacy compatibility patterns
+    /// 
+    /// Note: This is demonstration code - not actively used in the current application.
     /// </summary>
     public class Cart
     {

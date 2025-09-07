@@ -4,8 +4,15 @@ using System.Collections.Generic;
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Represents a menu item in the restaurant ordering system
-    /// Contains all information about a food item including pricing, availability, and dietary information
+    /// Represents a menu item in the restaurant ordering system.
+    /// 
+    /// Demonstrates:
+    /// - Entity pattern for business objects
+    /// - Data validation and business rules
+    /// - Property management patterns
+    /// - Category and dietary information handling
+    /// 
+    /// Note: This is demonstration code - not actively used in the current application.
     /// </summary>
     public class Item
     {

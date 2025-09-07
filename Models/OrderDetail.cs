@@ -4,7 +4,13 @@ using System.Collections.Generic;
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Represents a detail line item within an order in Tasty Eats
+    /// Represents a detail line item within an order.
+    /// 
+    /// Demonstrates:
+    /// - Composite Pattern as part of Order
+    /// - Business logic for order line items
+    /// - Data serialization patterns
+    /// - Item customization handling
     /// </summary>
     public class OrderDetail
     {

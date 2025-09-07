@@ -6,7 +6,15 @@ using OnlineOrderingSystem.DesignPatterns;
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Represents an order in the Tasty Eats online ordering system
+    /// Represents an order in the online ordering system.
+    /// 
+    /// Demonstrates:
+    /// - Observer Pattern for status notifications
+    /// - Composite Pattern with OrderDetail collection
+    /// - Business logic for order management
+    /// - State management for order lifecycle
+    /// 
+    /// Note: This is demonstration code - not actively used in the current application.
     /// </summary>
     public class Order
     {

@@ -3,7 +3,14 @@ using System;
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Abstract base class for payment processing
+    /// Abstract base class for payment processing demonstrating polymorphism.
+    /// 
+    /// Demonstrates:
+    /// - Abstract class pattern
+    /// - Polymorphism with concrete implementations
+    /// - Template Method pattern
+    /// 
+    /// Note: This is demonstration code - not actively used in the current application.
     /// </summary>
     public abstract class Payment
     {
@@ -48,7 +55,12 @@ namespace OnlineOrderingSystem.Models
     }
 
     /// <summary>
-    /// Concrete payment entity for database storage
+    /// Concrete payment entity for database storage.
+    /// 
+    /// Demonstrates:
+    /// - Entity pattern for data persistence
+    /// - Factory method pattern
+    /// - Data transformation between layers
     /// </summary>
     public class PaymentEntity
     {

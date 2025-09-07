@@ -4,7 +4,12 @@ using OnlineOrderingSystem.Models;
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Credit card payment processing
+    /// Credit card payment processing implementation.
+    /// 
+    /// Demonstrates:
+    /// - Concrete implementation of Payment abstract class
+    /// - Credit card validation logic
+    /// - Polymorphism in payment processing
     /// </summary>
     public class Credit : Payment
     {

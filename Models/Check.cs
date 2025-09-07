@@ -4,7 +4,12 @@ using OnlineOrderingSystem.Models;
 namespace OnlineOrderingSystem.Models
 {
     /// <summary>
-    /// Check payment processing
+    /// Check payment processing implementation.
+    /// 
+    /// Demonstrates:
+    /// - Concrete implementation of Payment abstract class
+    /// - Check validation logic
+    /// - Polymorphism in payment processing
     /// </summary>
     public class Check : Payment
     {
