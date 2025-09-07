@@ -6,15 +6,23 @@ using System.Windows.Forms;
 namespace OnlineOrderingSystem
 {
     /// <summary>
-    /// Main program class for the Tasty Eats Online Ordering System
-    /// Serves as the entry point for the Windows Forms application
+    /// Main program class for the Online Ordering System.
+    /// 
+    /// Demonstrates:
+    /// - Application entry point patterns
+    /// - Command-line argument handling
+    /// - Testing integration
+    /// - Database initialization
+    /// - Windows Forms application startup
+    /// 
+    /// Note: This is demonstration code - not actively used in the current application.
     /// </summary>
     internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
-        /// Initializes the application and starts the login form.
         /// </summary>
+        /// <param name="args">Command line arguments.</param>
         static void Main(string[] args)
         {
             // Check if running from command line or if user wants to run tests
@@ -90,7 +98,7 @@ namespace OnlineOrderingSystem
         }
 
         /// <summary>
-        /// Run tests only without GUI - console output only
+        /// Runs tests only without GUI - console output only.
         /// </summary>
         private static void RunTestsOnly()
         {
@@ -142,7 +150,7 @@ namespace OnlineOrderingSystem
         }
 
         /// <summary>
-        /// Run tests in a separate console window to demonstrate testing methodologies
+        /// Runs tests in a separate console window to demonstrate testing methodologies.
         /// </summary>
         private static void RunTestsInConsole()
         {
@@ -251,7 +259,7 @@ namespace OnlineOrderingSystem
         }
 
         /// <summary>
-        /// Initializes the database and seeds it with sample data
+        /// Initializes the database and seeds it with sample data.
         /// </summary>
         private static void InitializeDatabase()
         {
@@ -283,14 +291,14 @@ namespace OnlineOrderingSystem
         }
 
         /// <summary>
-        /// Allocate a console window for test output
+        /// Allocates a console window for test output.
         /// </summary>
         [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
         [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
         private static extern bool AllocConsole();
 
         /// <summary>
-        /// Free the console window
+        /// Frees the console window.
         /// </summary>
         [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
         [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]

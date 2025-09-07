@@ -6,10 +6,21 @@ using OnlineOrderingSystem.Models;
 namespace OnlineOrderingSystem
 {
     /// <summary>
-    /// Simple test class to verify database contains menu items
+    /// Simple test class to verify database contains menu items.
+    /// 
+    /// Demonstrates:
+    /// - Unit testing patterns
+    /// - Database integration testing
+    /// - Test data validation
+    /// - Console-based testing output
+    /// 
+    /// Note: This is demonstration code - not actively used in the current application.
     /// </summary>
     public class TestMenuDatabase
     {
+        /// <summary>
+        /// Tests database menu items functionality.
+        /// </summary>
         public static void TestDatabaseItems()
         {
             Console.WriteLine("=== Testing Menu Database ===");
@@ -66,7 +77,7 @@ namespace OnlineOrderingSystem
         }
 
         /// <summary>
-        /// Test order and payment database integration
+        /// Tests order and payment database integration.
         /// </summary>
         public static void TestOrderAndPaymentDatabase()
         {
@@ -139,7 +150,7 @@ namespace OnlineOrderingSystem
         }
 
         /// <summary>
-        /// Test the new CardDetailsForm functionality
+        /// Tests the CardDetailsForm functionality.
         /// </summary>
         public static void TestCardDetailsForm()
         {

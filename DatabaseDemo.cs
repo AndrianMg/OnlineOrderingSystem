@@ -7,12 +7,20 @@ using OnlineOrderingSystem.Models;
 namespace OnlineOrderingSystem
 {
     /// <summary>
-    /// Demonstration class to test Entity Framework Core database operations
+    /// Demonstration class to test Entity Framework Core database operations.
+    /// 
+    /// Demonstrates:
+    /// - Integration testing patterns
+    /// - Database access layer testing
+    /// - Test data management
+    /// - Comprehensive testing suite
+    /// 
+    /// Note: This is demonstration code - not actively used in the current application.
     /// </summary>
     public class DatabaseDemo
     {
         /// <summary>
-        /// Runs a comprehensive test of the database functionality
+        /// Runs a comprehensive test of the database functionality.
         /// </summary>
         public static void RunDatabaseTest()
         {
@@ -49,6 +57,9 @@ namespace OnlineOrderingSystem
             }
         }
 
+        /// <summary>
+        /// Tests database initialization and seeding.
+        /// </summary>
         private static void TestDatabaseInitialization()
         {
             Console.WriteLine("1. Testing Database Initialization...");
@@ -77,6 +88,9 @@ namespace OnlineOrderingSystem
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Tests menu data access operations.
+        /// </summary>
         private static void TestMenuDataAccess()
         {
             Console.WriteLine("2. Testing Menu Data Access...");
@@ -118,6 +132,9 @@ namespace OnlineOrderingSystem
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Tests user data access operations.
+        /// </summary>
         private static void TestUserDataAccess()
         {
             Console.WriteLine("3. Testing User Data Access...");
@@ -151,6 +168,9 @@ namespace OnlineOrderingSystem
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Tests order data access operations.
+        /// </summary>
         private static void TestOrderDataAccess()
         {
             Console.WriteLine("4. Testing Order Data Access...");
@@ -218,7 +238,7 @@ namespace OnlineOrderingSystem
         }
 
         /// <summary>
-        /// Tests payment data access operations - DISABLED (PaymentDataAccess was removed)
+        /// Tests payment data access operations - DISABLED (PaymentDataAccess was removed).
         /// </summary>
         private static void TestPaymentDataAccess()
         {
