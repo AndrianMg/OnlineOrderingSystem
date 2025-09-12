@@ -7,16 +7,16 @@ namespace OnlineOrderingSystem.Forms
 {
     public class CardDetailsForm : Form
     {
-        private TextBox txtCardNumber;
-        private TextBox txtCardHolderName;
-        private TextBox txtExpiryMonth;
-        private TextBox txtExpiryYear;
-        private TextBox txtCVV;
-        private Button btnConfirm;
-        private Button btnCancel;
-        private Label lblAlert;
+        private TextBox txtCardNumber = null!;
+        private TextBox txtCardHolderName = null!;
+        private TextBox txtExpiryMonth = null!;
+        private TextBox txtExpiryYear = null!;
+        private TextBox txtCVV = null!;
+        private Button btnConfirm = null!;
+        private Button btnCancel = null!;
+        private Label lblAlert = null!;
 
-        public Credit CardDetails { get; private set; }
+        public Credit? CardDetails { get; private set; }
 
         public CardDetailsForm(double amount)
         {
@@ -167,7 +167,7 @@ namespace OnlineOrderingSystem.Forms
                 Font = new Font("Segoe UI", 9),
                 ForeColor = Color.Gray,
                 Location = new Point(50, 315),
-                Size = new Size(200, 15)
+                Size = new Size(300, 15)
             };
 
             // CVV
@@ -194,11 +194,11 @@ namespace OnlineOrderingSystem.Forms
 
             var lblHint4 = new Label
             {
-                Text = "💡 3-4 digit security code on the back of your card",
+                Text = "💡 3-4 digit security code on back of card",
                 Font = new Font("Segoe UI", 9),
                 ForeColor = Color.Gray,
                 Location = new Point(250, 315),
-                Size = new Size(200, 30)
+                Size = new Size(220, 15)
             };
 
             // Buttons
