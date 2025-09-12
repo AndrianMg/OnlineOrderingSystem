@@ -167,7 +167,7 @@ namespace OnlineOrderingSystem.Forms
                 Font = new Font("Segoe UI", 9),
                 ForeColor = Color.Gray,
                 Location = new Point(50, 315),
-                Size = new Size(300, 15)
+                Size = new Size(200, 15)
             };
 
             // CVV
@@ -194,11 +194,11 @@ namespace OnlineOrderingSystem.Forms
 
             var lblHint4 = new Label
             {
-                Text = "💡 3-4 digit security code on back of card",
+                Text = "💡 3-4 digit security code on the back of your card",
                 Font = new Font("Segoe UI", 9),
                 ForeColor = Color.Gray,
                 Location = new Point(250, 315),
-                Size = new Size(220, 15)
+                Size = new Size(200, 30)
             };
 
             // Buttons

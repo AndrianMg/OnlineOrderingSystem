@@ -31,7 +31,7 @@ namespace OnlineOrderingSystem.Forms
             this.Text = "Tasty Eats - Order History";
             this.Size = new Size(1000, 700);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.FromArgb(33, 33, 33);
+            this.BackColor = Color.FromArgb(255, 248, 240);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
 
@@ -45,8 +45,8 @@ namespace OnlineOrderingSystem.Forms
             lblTitle = new Label
             {
                 Text = "📋 Order History",
-                Font = new Font("Arial", 24, FontStyle.Bold),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 24, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Location = new Point(50, 30),
                 Size = new Size(900, 40)
@@ -56,8 +56,8 @@ namespace OnlineOrderingSystem.Forms
             lblOrderHistory = new Label
             {
                 Text = "Your Orders:",
-                Font = new Font("Arial", 14, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 152, 219),
                 Location = new Point(50, 90),
                 Size = new Size(200, 25)
             };
@@ -66,17 +66,17 @@ namespace OnlineOrderingSystem.Forms
             {
                 Location = new Point(50, 120),
                 Size = new Size(400, 400),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
-                Font = new Font("Arial", 11)
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
+                Font = new Font("Segoe UI", 11)
             };
 
             // Order Details Section
             lblOrderDetails = new Label
             {
                 Text = "Order Details:",
-                Font = new Font("Arial", 14, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 152, 219),
                 Location = new Point(500, 90),
                 Size = new Size(200, 25)
             };
@@ -85,32 +85,34 @@ namespace OnlineOrderingSystem.Forms
             {
                 Location = new Point(500, 120),
                 Size = new Size(400, 400),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
-                Font = new Font("Arial", 11)
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
+                Font = new Font("Segoe UI", 11)
             };
 
             // Buttons
             btnRefresh = new Button
             {
                 Text = "🔄 Refresh",
-                Font = new Font("Arial", 12, FontStyle.Bold),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
                 ForeColor = Color.White,
-                BackColor = Color.FromArgb(0, 150, 255),
+                BackColor = Color.FromArgb(46, 204, 113),
                 Location = new Point(50, 540),
                 Size = new Size(120, 40),
-                FlatStyle = FlatStyle.Flat
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
             };
 
             btnBack = new Button
             {
                 Text = "← Back",
-                Font = new Font("Arial", 12, FontStyle.Bold),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
                 ForeColor = Color.White,
-                BackColor = Color.FromArgb(100, 100, 100),
+                BackColor = Color.FromArgb(231, 76, 60),
                 Location = new Point(200, 540),
                 Size = new Size(120, 40),
-                FlatStyle = FlatStyle.Flat
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
             };
 
             // Add controls to form
@@ -118,6 +120,14 @@ namespace OnlineOrderingSystem.Forms
                 lblTitle, lblOrderHistory, lstOrderHistory,
                 lblOrderDetails, lstOrderDetails, btnRefresh, btnBack
             });
+
+            foreach (Control control in this.Controls)
+            {
+                if (control is Label label)
+                {
+                    label.BackColor = Color.Transparent;
+                }
+            }
         }
 
         private void SetupEventHandlers()
@@ -269,4 +279,4 @@ namespace OnlineOrderingSystem.Forms
             this.Close();
         }
     }
-} 
+}
