@@ -167,7 +167,7 @@ namespace OnlineOrderingSystem.Forms
                 Font = new Font("Segoe UI", 9),
                 ForeColor = Color.Gray,
                 Location = new Point(50, 315),
-                Size = new Size(300, 15)
+                Size = new Size(180, 15)
             };
 
             // CVV
@@ -197,8 +197,8 @@ namespace OnlineOrderingSystem.Forms
                 Text = "💡 3-4 digit security code on back of card",
                 Font = new Font("Segoe UI", 9),
                 ForeColor = Color.Gray,
-                Location = new Point(250, 315),
-                Size = new Size(220, 15)
+                Location = new Point(250, 330),
+                Size = new Size(220, 30)
             };
 
             // Buttons
@@ -208,7 +208,7 @@ namespace OnlineOrderingSystem.Forms
                 Font = new Font("Segoe UI", 12, FontStyle.Bold),
                 ForeColor = Color.White,
                 BackColor = Color.FromArgb(46, 204, 113),
-                Location = new Point(50, 360),
+                Location = new Point(50, 380),
                 Size = new Size(150, 40),
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand
@@ -220,7 +220,7 @@ namespace OnlineOrderingSystem.Forms
                 Font = new Font("Segoe UI", 12),
                 ForeColor = Color.White,
                 BackColor = Color.FromArgb(231, 76, 60),
-                Location = new Point(220, 360),
+                Location = new Point(220, 380),
                 Size = new Size(130, 40),
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand
@@ -234,7 +234,7 @@ namespace OnlineOrderingSystem.Forms
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Location = new Point(50, 420),
+                Location = new Point(50, 440),
                 Size = new Size(400, 30)
             };
 

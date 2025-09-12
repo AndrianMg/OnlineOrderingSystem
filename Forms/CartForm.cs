@@ -9,14 +9,14 @@ namespace OnlineOrderingSystem.Forms
     {
         private Cart cart;
         private int customerId;
-        private ListBox lstCartItems;
-        private Button btnRemoveItem;
-        private Button btnUpdateQuantity;
-        private Button btnClearCart;
-        private Button btnCheckout;
-        private Button btnBack;
-        private Label lblTotal;
-        private Label lblItemCount;
+        private ListBox? lstCartItems;
+        private Button? btnRemoveItem;
+        private Button? btnUpdateQuantity;
+        private Button? btnClearCart;
+        private Button? btnCheckout;
+        private Button? btnBack;
+        private Label? lblTotal;
+        private Label? lblItemCount;
 
         public CartForm(Cart cart, int customerId = 1)
         {
@@ -165,16 +165,16 @@ namespace OnlineOrderingSystem.Forms
 
         private void SetupEventHandlers()
         {
-            btnRemoveItem.Click += BtnRemoveItem_Click;
-            btnUpdateQuantity.Click += BtnUpdateQuantity_Click;
-            btnClearCart.Click += BtnClearCart_Click;
-            btnCheckout.Click += BtnCheckout_Click;
-            btnBack.Click += BtnBack_Click;
+            btnRemoveItem!.Click += BtnRemoveItem_Click;
+            btnUpdateQuantity!.Click += BtnUpdateQuantity_Click;
+            btnClearCart!.Click += BtnClearCart_Click;
+            btnCheckout!.Click += BtnCheckout_Click;
+            btnBack!.Click += BtnBack_Click;
         }
 
         private void RefreshCartDisplay()
         {
-            lstCartItems.Items.Clear();
+            lstCartItems!.Items.Clear();
 
             foreach (var cartItem in cart.Items)
             {
@@ -183,26 +183,26 @@ namespace OnlineOrderingSystem.Forms
                 {
                     displayText += " (Customizable)";
                 }
-                lstCartItems.Items.Add(displayText);
+                lstCartItems!.Items.Add(displayText);
             }
 
-            lblItemCount.Text = $"Items: {cart.Items.Count}";
+            lblItemCount!.Text = $"Items: {cart.Items.Count}";
             var total = cart.CalculateTotal();
-            lblTotal.Text = $"Total: £{total:F2}";
+            lblTotal!.Text = $"Total: £{total:F2}";
 
             // Enable/disable buttons based on cart state
             bool hasItems = cart.Items.Count > 0;
-            btnRemoveItem.Enabled = hasItems;
-            btnUpdateQuantity.Enabled = hasItems;
-            btnClearCart.Enabled = hasItems;
-            btnCheckout.Enabled = hasItems;
+            btnRemoveItem!.Enabled = hasItems;
+            btnUpdateQuantity!.Enabled = hasItems;
+            btnClearCart!.Enabled = hasItems;
+            btnCheckout!.Enabled = hasItems;
         }
 
         private void BtnRemoveItem_Click(object sender, EventArgs e)
         {
-            if (lstCartItems.SelectedIndex >= 0)
+            if (lstCartItems!.SelectedIndex >= 0)
             {
-                var selectedCartItem = cart.Items[lstCartItems.SelectedIndex];
+                var selectedCartItem = cart.Items[lstCartItems!.SelectedIndex];
                 cart.RemoveItem(selectedCartItem.Item.ItemID);
                 RefreshCartDisplay();
                 MessageBox.Show($"{selectedCartItem.Item.Name} removed from cart.", "Item Removed", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -215,9 +215,9 @@ namespace OnlineOrderingSystem.Forms
 
         private void BtnUpdateQuantity_Click(object sender, EventArgs e)
         {
-            if (lstCartItems.SelectedIndex >= 0)
+            if (lstCartItems!.SelectedIndex >= 0)
             {
-                var selectedCartItem = cart.Items[lstCartItems.SelectedIndex];
+                var selectedCartItem = cart.Items[lstCartItems!.SelectedIndex];
 
                 using (var inputForm = new QuantityInputForm(selectedCartItem.Item.Name))
                 {
@@ -289,11 +289,11 @@ namespace OnlineOrderingSystem.Forms
     // Helper form for quantity input
     public class QuantityInputForm : Form
     {
-        private NumericUpDown numQuantity;
-        private Button btnOK;
-        private Button btnCancel;
+        private NumericUpDown? numQuantity;
+        private Button? btnOK;
+        private Button? btnCancel;
 
-        public int Quantity => (int)numQuantity.Value;
+        public int Quantity => (int)numQuantity!.Value;
 
         public QuantityInputForm(string itemName)
         {

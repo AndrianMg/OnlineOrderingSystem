@@ -38,7 +38,7 @@ namespace OnlineOrderingSystem.Forms
             this.Text = "Tasty Eats - Checkout";
             this.Size = new Size(800, 700);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.FromArgb(33, 33, 33);
+            this.BackColor = Color.FromArgb(255, 248, 240);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
 
@@ -53,8 +53,8 @@ namespace OnlineOrderingSystem.Forms
             var lblTitle = new Label
             {
                 Text = "💳 Checkout",
-                Font = new Font("Arial", 24, FontStyle.Bold),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 24, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94),
                 BackColor = Color.Transparent,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Location = new Point(50, 30),
@@ -65,8 +65,8 @@ namespace OnlineOrderingSystem.Forms
             var lblOrderSummary = new Label
             {
                 Text = "Order Summary:",
-                Font = new Font("Arial", 14, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 152, 219),
                 BackColor = Color.Transparent,
                 Location = new Point(50, 90),
                 Size = new Size(200, 25)
@@ -76,9 +76,9 @@ namespace OnlineOrderingSystem.Forms
             {
                 Location = new Point(50, 120),
                 Size = new Size(400, 150),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
-                Font = new Font("Arial", 10)
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
+                Font = new Font("Segoe UI", 10)
             };
 
             // Populate order items
@@ -91,8 +91,8 @@ namespace OnlineOrderingSystem.Forms
             var lblDelivery = new Label
             {
                 Text = "Delivery Options:",
-                Font = new Font("Arial", 14, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 152, 219),
                 Location = new Point(50, 290),
                 Size = new Size(200, 25)
             };
@@ -100,8 +100,8 @@ namespace OnlineOrderingSystem.Forms
             chkDelivery = new CheckBox
             {
                 Text = "Delivery (45-60 minutes)",
-                Font = new Font("Arial", 12),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                ForeColor = Color.FromArgb(52, 73, 94),
                 Location = new Point(50, 320),
                 Size = new Size(250, 25),
                 Checked = true
@@ -110,8 +110,8 @@ namespace OnlineOrderingSystem.Forms
             var lblAddress = new Label
             {
                 Text = "Delivery Address:",
-                Font = new Font("Arial", 12),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                ForeColor = Color.FromArgb(52, 73, 94),
                 Location = new Point(50, 360),
                 Size = new Size(150, 25)
             };
@@ -120,28 +120,28 @@ namespace OnlineOrderingSystem.Forms
             {
                 Location = new Point(50, 390),
                 Size = new Size(400, 25),
-                Font = new Font("Arial", 11),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
                 Text = "123 Main Street, London, SW1A 1AA"
             };
 
             var lblInstructions = new Label
             {
                 Text = "Special Instructions:",
-                Font = new Font("Arial", 12),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                ForeColor = Color.FromArgb(52, 73, 94),
                 Location = new Point(50, 430),
-                Size = new Size(150, 25)
+                Size = new Size(200, 25)
             };
 
             txtSpecialInstructions = new TextBox
             {
                 Location = new Point(50, 460),
                 Size = new Size(400, 60),
-                Font = new Font("Arial", 11),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
                 Multiline = true,
                 ScrollBars = ScrollBars.Vertical
             };
@@ -150,8 +150,8 @@ namespace OnlineOrderingSystem.Forms
             var lblPayment = new Label
             {
                 Text = "Payment Method:",
-                Font = new Font("Arial", 14, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 152, 219),
                 Location = new Point(50, 540),
                 Size = new Size(200, 25)
             };
@@ -160,9 +160,9 @@ namespace OnlineOrderingSystem.Forms
             {
                 Location = new Point(50, 570),
                 Size = new Size(200, 30),
-                Font = new Font("Arial", 12),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
 
@@ -173,8 +173,8 @@ namespace OnlineOrderingSystem.Forms
             var lblCostBreakdown = new Label
             {
                 Text = "Cost Breakdown:",
-                Font = new Font("Arial", 14, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 152, 219),
                 Location = new Point(500, 90),
                 Size = new Size(200, 25)
             };
@@ -182,8 +182,8 @@ namespace OnlineOrderingSystem.Forms
             lblSubtotal = new Label
             {
                 Text = "Subtotal: £0.00",
-                Font = new Font("Arial", 12),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                ForeColor = Color.FromArgb(52, 73, 94),
                 Location = new Point(500, 130),
                 Size = new Size(200, 25)
             };
@@ -191,8 +191,8 @@ namespace OnlineOrderingSystem.Forms
             lblTax = new Label
             {
                 Text = "VAT (20%): £0.00",
-                Font = new Font("Arial", 12),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                ForeColor = Color.FromArgb(52, 73, 94),
                 Location = new Point(500, 160),
                 Size = new Size(200, 25)
             };
@@ -200,8 +200,8 @@ namespace OnlineOrderingSystem.Forms
             lblDeliveryFee = new Label
             {
                 Text = "Delivery Fee: £0.00",
-                Font = new Font("Arial", 12),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                ForeColor = Color.FromArgb(52, 73, 94),
                 Location = new Point(500, 190),
                 Size = new Size(200, 25)
             };
@@ -209,8 +209,8 @@ namespace OnlineOrderingSystem.Forms
             lblTotal = new Label
             {
                 Text = "Total: £0.00",
-                Font = new Font("Arial", 16, FontStyle.Bold),
-                ForeColor = Color.FromArgb(255, 165, 0),
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                ForeColor = Color.FromArgb(231, 76, 60),
                 Location = new Point(500, 230),
                 Size = new Size(250, 30)
             };
@@ -219,9 +219,9 @@ namespace OnlineOrderingSystem.Forms
             btnPlaceOrder = new Button
             {
                 Text = "Place Order",
-                Font = new Font("Arial", 14, FontStyle.Bold),
-                ForeColor = Color.Black,
-                BackColor = Color.FromArgb(0, 150, 0),
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(46, 204, 113),
                 Location = new Point(500, 570),
                 Size = new Size(150, 40),
                 FlatStyle = FlatStyle.Flat,
@@ -231,9 +231,9 @@ namespace OnlineOrderingSystem.Forms
             btnCancel = new Button
             {
                 Text = "Cancel",
-                Font = new Font("Arial", 12),
+                Font = new Font("Segoe UI", 12),
                 ForeColor = Color.White,
-                BackColor = Color.FromArgb(100, 100, 100),
+                BackColor = Color.FromArgb(231, 76, 60),
                 Location = new Point(670, 570),
                 Size = new Size(100, 40),
                 FlatStyle = FlatStyle.Flat,
@@ -244,9 +244,9 @@ namespace OnlineOrderingSystem.Forms
             lblAlert = new Label
             {
                 Text = "",
-                Font = new Font("Arial", 10),
-                ForeColor = Color.White,
-                BackColor = Color.FromArgb(33, 33, 33),
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.Black,
+                BackColor = Color.Transparent,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Location = new Point(50, 630),
                 Size = new Size(700, 25)
@@ -260,13 +260,10 @@ namespace OnlineOrderingSystem.Forms
                 lblDeliveryFee, lblTotal, btnPlaceOrder, btnCancel, lblAlert
             });
 
-            // Ensure form background color is applied
-            this.BackColor = Color.FromArgb(33, 33, 33);
-            
             // Set all labels to transparent background
             foreach (Control control in this.Controls)
             {
-                if (control is Label label && (label.BackColor == SystemColors.Control || label.BackColor == Color.Empty))
+                if (control is Label label)
                 {
                     label.BackColor = Color.Transparent;
                 }
