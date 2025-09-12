@@ -17,30 +17,30 @@ namespace OnlineOrderingSystem.Forms
     public class EnhancedMenuForm : Form
     {
         // UI Controls
-        private TabControl categoryTabs;
-        private ListBox lstMenu;
-        private TextBox txtSearch;
-        private Panel cardPanel;
-        private Label lblLogo;
-        private Label lblTagline;
+        private TabControl categoryTabs = new TabControl();
+        private ListBox lstMenu = new ListBox();
+        private TextBox txtSearch = new TextBox();
+        private Panel cardPanel = new Panel();
+        private Label lblLogo = new Label();
+        private Label lblTagline = new Label();
         
         // Notification controls
-        private Panel notificationPanel;
-        private ListBox lstNotifications;
-        private Label lblNotificationTitle;
-        private Button btnClearNotifications;
-        private Button btnNotificationStats;
+        private Panel notificationPanel = new Panel();
+        private ListBox lstNotifications = new ListBox();
+        private Label lblNotificationTitle = new Label();
+        private Button btnClearNotifications = new Button();
+        private Button btnNotificationStats = new Button();
         
         // Data management
-        private Cart currentCart;
-        private List<Item> allItems;
-        private List<Item> filteredItems;
-        private Dictionary<string, List<Item>> itemsByCategory;
-        private MenuDataAccess menuDataAccess;
+        private Cart currentCart = new Cart();
+        private List<Item> allItems = new List<Item>();
+        private List<Item> filteredItems = new List<Item>();
+        private Dictionary<string, List<Item>> itemsByCategory = new Dictionary<string, List<Item>>();
+        private MenuDataAccess menuDataAccess = new MenuDataAccess();
         private int customerId;
         
         // Services
-        private NotificationService notificationService;
+        private NotificationService notificationService = NotificationService.GetInstance();
 
         // Color scheme
         private Color primaryBlue = Color.FromArgb(52, 152, 219);
@@ -359,15 +359,18 @@ namespace OnlineOrderingSystem.Forms
             }
 
             // Group items by category for filtering
-            foreach (var item in allItems)
+            if (allItems != null)
             {
-                if (!itemsByCategory.ContainsKey(item.Category))
-                    itemsByCategory[item.Category] = new List<Item>();
-                itemsByCategory[item.Category].Add(item);
+                foreach (var item in allItems)
+                {
+                    if (!itemsByCategory.ContainsKey(item.Category))
+                        itemsByCategory[item.Category] = new List<Item>();
+                    itemsByCategory[item.Category].Add(item);
+                }
             }
 
             CreateCategoryTabs();
-            DisplayItems(allItems);
+            DisplayItems(allItems ?? new List<Item>());
 
             // Debug: Ensure the ListBox is properly configured
             if (lstMenu != null)
