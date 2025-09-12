@@ -14,9 +14,9 @@ namespace OnlineOrderingSystem.Forms
     public class MainForm : Form
     {
         private int customerId;
-        private Panel cardPanel;
-        private Label lblLogo;
-        private Label lblTagline;
+        private Panel? cardPanel;
+        private Label? lblLogo;
+        private Label? lblTagline;
 
         // Color scheme
         private Color primaryBlue = Color.FromArgb(52, 152, 219);
@@ -256,19 +256,21 @@ namespace OnlineOrderingSystem.Forms
         /// <param name="g">Graphics object</param>
         private void DrawCardShadow(Graphics g)
         {
-            // Draw shadow
-            using (var shadowBrush = new SolidBrush(Color.FromArgb(30, 0, 0, 0)))
+            if (cardPanel != null)
             {
-                g.FillRectangle(shadowBrush, 5, 5, cardPanel.Width - 10, cardPanel.Height - 10);
-            }
+                // Draw shadow
+                using (var shadowBrush = new SolidBrush(Color.FromArgb(30, 0, 0, 0)))
+                {
+                    g.FillRectangle(shadowBrush, 5, 5, cardPanel.Width - 10, cardPanel.Height - 10);
+                }
 
-            // Draw card background
-            using (var cardBrush = new SolidBrush(Color.White))
-            {
-                g.FillRectangle(cardBrush, 0, 0, cardPanel.Width, cardPanel.Height);
+                // Draw card background
+                using (var cardBrush = new SolidBrush(Color.White))
+                {
+                    g.FillRectangle(cardBrush, 0, 0, cardPanel.Width, cardPanel.Height);
+                }
             }
         }
-
         /// <summary>
         /// Handles keyboard navigation for the main form
         /// </summary>
