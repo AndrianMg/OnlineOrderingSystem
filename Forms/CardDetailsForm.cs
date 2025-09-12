@@ -27,9 +27,9 @@ namespace OnlineOrderingSystem.Forms
         private void InitializeComponent()
         {
             this.Text = "Card Details - Tasty Eats";
-            this.Size = new Size(500, 480);
+            this.Size = new Size(500, 520);
             this.StartPosition = FormStartPosition.CenterParent;
-            this.BackColor = Color.FromArgb(33, 33, 33);
+            this.BackColor = Color.FromArgb(255, 248, 240);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
 
@@ -43,8 +43,8 @@ namespace OnlineOrderingSystem.Forms
             var lblTitle = new Label
             {
                 Text = "💳 Enter Card Details",
-                Font = new Font("Arial", 18, FontStyle.Bold),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Location = new Point(50, 20),
                 Size = new Size(400, 30)
@@ -54,70 +54,89 @@ namespace OnlineOrderingSystem.Forms
             var lblCardNumber = new Label
             {
                 Text = "Card Number:",
-                Font = new Font("Arial", 12, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 152, 219),
                 Location = new Point(50, 70),
-                Size = new Size(120, 25)
+                Size = new Size(150, 25)
             };
 
             txtCardNumber = new TextBox
             {
                 Location = new Point(50, 100),
                 Size = new Size(300, 30),
-                Font = new Font("Arial", 14),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 14),
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
                 MaxLength = 19, // 16 digits + 3 spaces
                 TextAlign = HorizontalAlignment.Center,
                 Text = "**** **** **** ****"
+            };
+
+            // Helpful hints
+            var lblHint1 = new Label
+            {
+                Text = "💡 Enter your 16-digit card number",
+                Font = new Font("Segoe UI", 9),
+                ForeColor = Color.Gray,
+                Location = new Point(50, 135),
+                Size = new Size(300, 15)
             };
 
             // Card Holder Name
             var lblCardHolderName = new Label
             {
                 Text = "Cardholder Name:",
-                Font = new Font("Arial", 12, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
-                Location = new Point(50, 140),
-                Size = new Size(120, 25)
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 152, 219),
+                Location = new Point(50, 160),
+                Size = new Size(180, 25)
             };
 
             txtCardHolderName = new TextBox
             {
-                Location = new Point(50, 170),
+                Location = new Point(50, 190),
                 Size = new Size(300, 30),
-                Font = new Font("Arial", 12),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
                 MaxLength = 50
+            };
+
+            var lblHint2 = new Label
+            {
+                Text = "💡 Enter the name exactly as shown on your card",
+                Font = new Font("Segoe UI", 9),
+                ForeColor = Color.Gray,
+                Location = new Point(50, 225),
+                Size = new Size(300, 15)
             };
 
             // Expiry Date
             var lblExpiry = new Label
             {
                 Text = "Expiry Date:",
-                Font = new Font("Arial", 12, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
-                Location = new Point(50, 210),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 152, 219),
+                Location = new Point(50, 250),
                 Size = new Size(120, 25)
             };
 
             var lblMonth = new Label
             {
                 Text = "MM:",
-                Font = new Font("Arial", 10),
-                ForeColor = Color.White,
-                Location = new Point(50, 240),
-                Size = new Size(25, 20)
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(52, 73, 94),
+                Location = new Point(50, 280),
+                Size = new Size(35, 20)
             };
 
             txtExpiryMonth = new TextBox
             {
-                Location = new Point(80, 240),
+                Location = new Point(85, 280),
                 Size = new Size(50, 30),
-                Font = new Font("Arial", 12),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
                 MaxLength = 2,
                 TextAlign = HorizontalAlignment.Center
             };
@@ -125,90 +144,71 @@ namespace OnlineOrderingSystem.Forms
             var lblYear = new Label
             {
                 Text = "YY:",
-                Font = new Font("Arial", 10),
-                ForeColor = Color.White,
-                Location = new Point(140, 240),
-                Size = new Size(25, 20)
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(52, 73, 94),
+                Location = new Point(145, 280),
+                Size = new Size(35, 20)
             };
 
             txtExpiryYear = new TextBox
             {
-                Location = new Point(170, 240),
+                Location = new Point(180, 280),
                 Size = new Size(50, 30),
-                Font = new Font("Arial", 12),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
                 MaxLength = 2,
                 TextAlign = HorizontalAlignment.Center
+            };
+
+            var lblHint3 = new Label
+            {
+                Text = "💡 MM/YY format (e.g., 12/25)",
+                Font = new Font("Segoe UI", 9),
+                ForeColor = Color.Gray,
+                Location = new Point(50, 315),
+                Size = new Size(300, 15)
             };
 
             // CVV
             var lblCVV = new Label
             {
                 Text = "CVV:",
-                Font = new Font("Arial", 12, FontStyle.Bold),
-                ForeColor = Color.FromArgb(0, 150, 255),
-                Location = new Point(250, 210),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 152, 219),
+                Location = new Point(250, 250),
                 Size = new Size(50, 25)
             };
 
             txtCVV = new TextBox
             {
-                Location = new Point(250, 240),
+                Location = new Point(250, 280),
                 Size = new Size(100, 30),
-                Font = new Font("Arial", 12),
-                BackColor = Color.FromArgb(50, 50, 50),
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 12),
+                BackColor = Color.White,
+                ForeColor = Color.FromArgb(52, 73, 94),
                 MaxLength = 4,
                 TextAlign = HorizontalAlignment.Center,
                 UseSystemPasswordChar = true
             };
 
-            // Helpful hints
-            var lblHint1 = new Label
-            {
-                Text = "💡 Enter your 16-digit card number",
-                Font = new Font("Arial", 9),
-                ForeColor = Color.LightGray,
-                Location = new Point(50, 135),
-                Size = new Size(300, 20)
-            };
-
-            var lblHint2 = new Label
-            {
-                Text = "💡 Enter the name exactly as shown on your card",
-                Font = new Font("Arial", 9),
-                ForeColor = Color.LightGray,
-                Location = new Point(50, 205),
-                Size = new Size(300, 20)
-            };
-
-            var lblHint3 = new Label
-            {
-                Text = "💡 MM/YY format (e.g., 12/25)",
-                Font = new Font("Arial", 9),
-                ForeColor = Color.LightGray,
-                Location = new Point(50, 275),
-                Size = new Size(300, 20)
-            };
-
             var lblHint4 = new Label
             {
                 Text = "💡 3-4 digit security code on back of card",
-                Font = new Font("Arial", 9),
-                ForeColor = Color.LightGray,
-                Location = new Point(250, 275),
-                Size = new Size(200, 20)
+                Font = new Font("Segoe UI", 9),
+                ForeColor = Color.Gray,
+                Location = new Point(250, 315),
+                Size = new Size(220, 15)
             };
 
             // Buttons
             btnConfirm = new Button
             {
                 Text = "Confirm Payment",
-                Font = new Font("Arial", 12, FontStyle.Bold),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
                 ForeColor = Color.White,
-                BackColor = Color.FromArgb(0, 150, 0),
-                Location = new Point(50, 340),
+                BackColor = Color.FromArgb(46, 204, 113),
+                Location = new Point(50, 360),
                 Size = new Size(150, 40),
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand
@@ -217,10 +217,10 @@ namespace OnlineOrderingSystem.Forms
             btnCancel = new Button
             {
                 Text = "Cancel",
-                Font = new Font("Arial", 12),
+                Font = new Font("Segoe UI", 12),
                 ForeColor = Color.White,
-                BackColor = Color.FromArgb(100, 100, 100),
-                Location = new Point(220, 340),
+                BackColor = Color.FromArgb(231, 76, 60),
+                Location = new Point(220, 360),
                 Size = new Size(130, 40),
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand
@@ -230,12 +230,12 @@ namespace OnlineOrderingSystem.Forms
             lblAlert = new Label
             {
                 Text = "",
-                Font = new Font("Arial", 10),
+                Font = new Font("Segoe UI", 10),
                 ForeColor = Color.White,
-                BackColor = Color.FromArgb(33, 33, 33),
+                BackColor = Color.Transparent,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Location = new Point(50, 400),
-                Size = new Size(400, 25)
+                Location = new Point(50, 420),
+                Size = new Size(400, 30)
             };
 
             // Add controls to form
@@ -244,6 +244,14 @@ namespace OnlineOrderingSystem.Forms
                 lblExpiry, lblMonth, txtExpiryMonth, lblYear, txtExpiryYear,
                 lblCVV, txtCVV, btnConfirm, btnCancel, lblAlert, lblHint1, lblHint2, lblHint3, lblHint4
             });
+
+            foreach (Control control in this.Controls)
+            {
+                if (control is Label label)
+                {
+                    label.BackColor = Color.Transparent;
+                }
+            }
         }
 
         private void SetupEventHandlers()
@@ -279,7 +287,7 @@ namespace OnlineOrderingSystem.Forms
                 var masked = "";
                 for (int i = 0; i < text.Length; i++)
                 {
-                    if (i > 0 && i % 3 == 0) 
+                    if (i > 0 && i % 4 == 0) 
                     {
                         masked += " ";
                     }
