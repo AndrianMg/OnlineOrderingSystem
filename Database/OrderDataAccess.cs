@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using OnlineOrderingSystem.Data;
 using OnlineOrderingSystem.Models;
+using OnlineOrderingSystem.Services;
 
 namespace OnlineOrderingSystem.Database
 {
@@ -58,8 +59,9 @@ namespace OnlineOrderingSystem.Database
         /// </summary>
         /// <param name="order">The order to create</param>
         /// <param name="payment">The payment for the order</param>
+        /// <param name="customerEmail">Customer email for notifications</param>
         /// <returns>The created order with payment information</returns>
-        public Order CreateOrderWithPayment(Order order, Payment payment)
+        public Order CreateOrderWithPayment(Order order, Payment payment, string customerEmail = "customer@example.com")
         {
             using (var context = new OrderingDbContext())
             {
@@ -72,6 +74,10 @@ namespace OnlineOrderingSystem.Database
                 order.PaymentStatus = "Pending";
                 context.Orders.Update(order);
                 context.SaveChanges();
+
+                // Integrate with notification system
+                var notificationService = NotificationService.GetInstance();
+                notificationService.StartMonitoringOrder(order, customerEmail);
 
                 return order;
             }

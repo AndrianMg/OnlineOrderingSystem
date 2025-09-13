@@ -174,7 +174,7 @@ namespace OnlineOrderingSystem.Forms
             btnViewCart.Click += BtnViewCart_Click;
 
             var btnCheckout = CreateStyledButton("💳 Checkout", warningRed, new Point(1200, 20), new Size(140, 45));
-            btnCheckout.Click += BtnCheckout_Click;
+            btnCheckout.Click += btnCheckout_Click;
 
             headerPanel.Controls.AddRange(new Control[] {
                 lblTitle, lblSearch, txtSearch, btnBack, btnViewCart, btnCheckout
@@ -813,7 +813,7 @@ namespace OnlineOrderingSystem.Forms
         /// </summary>
         /// <param name="sender">The checkout button</param>
         /// <param name="e">Event arguments</param>
-        private void BtnCheckout_Click(object sender, EventArgs e)
+        private void btnCheckout_Click(object sender, EventArgs e)
         {
             if (currentCart.IsEmpty())
             {
@@ -839,9 +839,6 @@ namespace OnlineOrderingSystem.Forms
                 
                 // Show success message
                 ShowAlert($"Order #{order.OrderID} placed successfully! Monitoring for updates...", false);
-                
-                // Refresh the notification display
-                DisplayNotifications();
             }
         }
 
@@ -942,84 +939,141 @@ namespace OnlineOrderingSystem.Forms
         {
             // Simulate an order status update for a random order
             var orders = notificationService.GetMonitoredOrders();
+            Console.WriteLine($"Demo button clicked. Found {orders.Count} monitored orders.");
+            
             if (orders.Count > 0)
             {
                 var randomOrder = orders[new Random().Next(orders.Count)];
                 var newStatus = randomOrder.OrderStatus switch
                 {
+                    "Pending" => "Preparing",
                     "Preparing" => "Ready for Pickup",
                     "Ready for Pickup" => "Completed",
                     "Completed" => "Preparing",
                     _ => "Preparing" // Default to preparing
                 };
+                Console.WriteLine($"Updating Order #{randomOrder.OrderID} from {randomOrder.OrderStatus} to {newStatus}");
                 notificationService.UpdateOrderStatus(randomOrder.OrderID, newStatus);
-                ShowAlert($"Simulated status update for Order #{randomOrder.OrderID}: {newStatus}", false);
-                DisplayNotifications();
+                Console.WriteLine($"Called UpdateOrderStatus for Order #{randomOrder.OrderID}");
+                ShowAlert($"Demo: Updated Order #{randomOrder.OrderID} to {newStatus}", false);
             }
             else
             {
-                ShowAlert("No orders to simulate update for.", true);
+                // Create a demo order for testing if none exist
+                CreateDemoOrder();
+                ShowAlert("No active orders found. Created a demo order for testing!", false);
             }
         }
 
         /// <summary>
-        /// Displays notifications in the notification listbox
+        /// Creates a demo order for testing the notification system
+        /// </summary>
+        private void CreateDemoOrder()
+        {
+            try
+            {
+                // Create a demo order
+                var demoOrder = new Order
+                {
+                    OrderID = 999, // Demo order ID
+                    CustomerID = customerId,
+                    RestaurantID = 1,
+                    OrderStatus = "Pending",
+                    PaymentStatus = "Completed",
+                    OrderDate = DateTime.Now,
+                    EstimatedDeliveryTime = DateTime.Now.AddMinutes(30),
+                    TotalAmount = 25.99
+                };
+
+                // Add a demo order item
+                var demoItem = new OrderDetail
+                {
+                    ItemID = 1,
+                    ItemName = "Demo Pizza",
+                    Quantity = 1,
+                    Price = 25.99,
+                    TotalPrice = 25.99
+                };
+                demoOrder.OrderItems.Add(demoItem);
+
+                // Add initial status update
+                demoOrder.UpdateStatus("Pending", "Demo order created for testing");
+
+                // Start monitoring the demo order
+                StartMonitoringOrder(demoOrder, $"customer{customerId}@example.com");
+                
+                // Update the notification display immediately
+                DisplayNotifications();
+                
+                // Force refresh the notification list
+                lstNotifications.Refresh();
+                
+                Console.WriteLine($"Created demo order #{demoOrder.OrderID} with status: {demoOrder.OrderStatus}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating demo order: {ex.Message}");
+                ShowAlert($"Error creating demo order: {ex.Message}", true);
+            }
+        }
+
+        /// <summary>
+        /// Displays the initial list of monitored orders.
         /// </summary>
         private void DisplayNotifications()
         {
             lstNotifications.Items.Clear();
             
-            // Get monitored orders and display their status
             var monitoredOrders = notificationService.GetMonitoredOrders();
+            Console.WriteLine($"DisplayNotifications: Found {monitoredOrders.Count} monitored orders");
+            
             if (monitoredOrders.Count > 0)
             {
                 foreach (var order in monitoredOrders)
                 {
                     var notificationText = $"Order #{order.OrderID}: {order.OrderStatus}";
                     lstNotifications.Items.Add(notificationText);
+                    Console.WriteLine($"Added to notification list: {notificationText}");
                 }
             }
             else
             {
                 lstNotifications.Items.Add("No active orders being monitored");
             }
-            
-            lstNotifications.Refresh();
         }
 
         /// <summary>
-        /// Initializes notifications and starts the notification display loop
+        /// Initializes the notification system by subscribing to status update events.
         /// </summary>
         private void InitializeNotifications()
         {
-            // Debug: Ensure notification panel is visible
-            if (notificationPanel != null)
-            {
-                notificationPanel.Visible = true;
-                notificationPanel.BringToFront();
-                Console.WriteLine($"Notification panel created at: {notificationPanel.Location}, Size: {notificationPanel.Size}");
-            }
-            else
-            {
-                Console.WriteLine("ERROR: Notification panel is null!");
-            }
-
-            // Set up a timer to refresh notifications every 5 seconds
-            var notificationTimer = new System.Windows.Forms.Timer
-            {
-                Interval = 5000, // 5 seconds
-                Enabled = true
-            };
-            
-            notificationTimer.Tick += (sender, e) => {
-                DisplayNotifications();
-            };
-            
+            notificationService.OrderStatusChanged += OnOrderStatusChanged;
             DisplayNotifications(); // Initial display
         }
 
         /// <summary>
-        /// Starts monitoring an order for status updates
+        /// Event handler for real-time order status updates.
+        /// </summary>
+        /// <param name="updatedOrder">The order that was updated.</param>
+        private void OnOrderStatusChanged(Order updatedOrder)
+        {
+            // Ensure UI updates are run on the UI thread.
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() => OnOrderStatusChanged(updatedOrder)));
+                return;
+            }
+
+            Console.WriteLine($"OnOrderStatusChanged called for Order #{updatedOrder.OrderID} with status: {updatedOrder.OrderStatus}");
+            
+            // Refresh the entire notification list to ensure consistency
+            DisplayNotifications();
+            
+            Console.WriteLine($"Notification list refreshed. Current items: {lstNotifications.Items.Count}");
+        }
+
+        /// <summary>
+        /// Starts monitoring an order and adds it to the notification list.
         /// </summary>
         /// <param name="order">The order to monitor</param>
         /// <param name="customerEmail">Customer email for notifications</param>
@@ -1028,9 +1082,13 @@ namespace OnlineOrderingSystem.Forms
             if (order != null)
             {
                 notificationService.StartMonitoringOrder(order, customerEmail);
+                
+                // Refresh the notification display to show the new order
                 DisplayNotifications();
+                
                 ShowAlert($"Started monitoring Order #{order.OrderID}", false);
+                Console.WriteLine($"Started monitoring Order #{order.OrderID} with status: {order.OrderStatus}");
             }
         }
     }
-} 
+}

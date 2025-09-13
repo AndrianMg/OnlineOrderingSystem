@@ -363,7 +363,7 @@ namespace OnlineOrderingSystem.Forms
 
                 // Save order and payment to database
                 var orderDataAccess = new OrderDataAccess();
-                var savedOrder = orderDataAccess.CreateOrderWithPayment(order, payment);
+                var savedOrder = orderDataAccess.CreateOrderWithPayment(order, payment, $"customer{customerId}@example.com");
 
                 if (savedOrder != null)
                 {

@@ -51,7 +51,17 @@ namespace OnlineOrderingSystem.Services
         private readonly DeliveryNotificationObserver _deliveryObserver;
         
         #endregion
-        
+
+        #region Events
+
+        /// <summary>
+        /// Event triggered when an order's status is updated.
+        /// UI components can subscribe to this event to receive real-time updates.
+        /// </summary>
+        public event Action<Order>? OrderStatusChanged;
+
+        #endregion
+
         #region Order Monitoring Fields
         
         /// <summary>
@@ -262,7 +272,12 @@ namespace OnlineOrderingSystem.Services
                 // Update the order status with detailed message
                 // This automatically triggers observer notifications
                 order.UpdateStatus(newStatus, $"Status updated to: {newStatus}");
-                
+
+                // Trigger the public event for UI updates
+                Console.WriteLine($"Triggering OrderStatusChanged event for Order #{orderId}");
+                OrderStatusChanged?.Invoke(order);
+                Console.WriteLine($"OrderStatusChanged event triggered successfully");
+
                 // Log successful status update for audit trail
                 Console.WriteLine($"Order #{orderId} status updated to: {newStatus}");
             }

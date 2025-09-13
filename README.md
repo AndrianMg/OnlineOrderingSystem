@@ -1,238 +1,101 @@
 # 🍽️ Tasty Eats - Online Ordering System
 
-A modern, feature-rich Windows Forms application for restaurant online ordering built with C# .NET 6.0. This project demonstrates advanced programming concepts, design patterns, and modern UI/UX principles.
+A modern, feature-rich Windows Forms application for a restaurant online ordering system, built with C# and .NET. This project utilizes Entity Framework Core for data persistence and showcases several key software design patterns.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![.NET](https://img.shields.io/badge/.NET-6.0-purple.svg)
+![.NET](https://img.shields.io/badge/.NET-8.0-purple.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)
-
-## 🚀 Recent Updates (v1.2)
-
-### ✅ Latest Changes
-- **Fixed Welcome Form**: All navigation buttons now display properly
-- **Updated Promotions**: "Live special offers only today 20%" banner
-- **Streamlined UI**: Removed Event Demo button for cleaner interface
-- **Login First**: Application now starts with authentication as intended
-- **Better Layout**: Improved button positioning and spacing
 
 ## 📋 Features
 
-### 🎨 **Enhanced User Interface**
-- **Modern Dark Theme**: Professional dark interface with consistent styling
-- **Responsive Design**: Optimized for different screen sizes
-- **Interactive Elements**: Hover effects, animations, and visual feedback
-- **Accessibility**: Keyboard shortcuts and tooltips
+- **Modern UI:** A clean, themed interface for a pleasant user experience.
+- **Menu System:** Browse items by category, view details, and search for specific items.
+- **Item Customization:** Add or remove optional ingredients for menu items.
+- **Dynamic Shopping Cart:** Add items to a cart, adjust quantities, and see the total price update in real-time.
+- **Order History:** Registered users can view their past orders and check details.
+- **Centralized Exception Handling:** A dedicated (though currently demonstrative) service for handling application-wide exceptions.
+- **Database Integration:** Uses Entity Framework Core to manage the database schema and data.
 
-### 🍽️ **Menu Management**
-- **Category Tabs**: Easy navigation between Starters, Mains, Desserts, Drinks
-- **Search Functionality**: Find items by name, description, or dietary tags
-- **Dietary Information**: Visual tags for Vegetarian, Spicy, Healthy, Gluten-Free options
-- **Star Ratings**: Customer reviews and ratings display
-- **Preparation Times**: Estimated cooking times for each item
+## 🔧 Technology Stack
 
-### 🛒 **Shopping Cart**
-- **Live Cart Preview**: Real-time updates as items are added
-- **Quantity Management**: Easy quantity adjustment
-- **Item Removal**: Remove items directly from cart
-- **Total Calculation**: Automatic price calculations
+- **Backend & Frontend:** C# with .NET 8 and Windows Forms.
+- **Database:** Microsoft SQL Server.
+- **ORM:** Entity Framework Core for data access and migrations.
 
-### 📋 **Order History**
-- **Comprehensive Tracking**: View all past orders with details
-- **Status Filtering**: Filter by Delivered, In Progress, Preparing
-- **Export Options**: PDF export and print functionality
-- **Progress Tracking**: Visual progress bars for active orders
-- **Loyalty Rewards**: Track savings and rewards
-
-### 🔧 **Database Integration**
-- **MySQL Database**: Full database integration with sample data
-- **Data Persistence**: Orders, users, and menu items stored in database
-- **Connection Management**: Easy database setup and configuration
-- **Fallback System**: Graceful handling when database is unavailable
-
-## 🚀 Quick Start
+## 🚀 Quick Start Guide
 
 ### Prerequisites
-- **.NET 6.0** or later
-- **MySQL Server** (8.0 or later recommended)
-- **MySQL Workbench** (optional, for database management)
 
-### Installation Steps
+- **.NET 8 SDK**
+- **Microsoft SQL Server:** An accessible instance (like SQL Server Express) is required.
 
-#### 1. **Clone/Download the Project**
-```bash
-git clone <repository-url>
-cd OnlineOrderingSystem
-```
+### 1. Configure the Database Connection
 
-#### 2. **Set Up MySQL Database**
+The connection string for the database is defined within the `OrderingDbContext.cs` file. You must update it to point to your SQL Server instance.
 
-**Option A: Using MySQL Workbench**
-1. Open MySQL Workbench
-2. Connect to your MySQL server
-3. Open the SQL script: `Database/tasty_eats_schema.sql`
-4. Execute the script to create the database and sample data
+1.  Open the file: `OnlineOrderingSystem/Data/OrderingDbContext.cs`.
+2.  Locate the `OnConfiguring` method.
+3.  Modify the connection string in the `optionsBuilder.UseSqlServer()` call. For example:
 
-**Option B: Using Command Line**
-```bash
-mysql -u root -p < Database/tasty_eats_schema.sql
-```
+    ```csharp
+    // Example for SQL Server Express
+    optionsBuilder.UseSqlServer("Server=.\SQLEXPRESS;Database=OnlineOrderingSystem;Trusted_Connection=True;TrustServerCertificate=true;");
+    ```
 
-#### 3. **Configure Database Connection**
-1. Run the application: `dotnet run`
-2. Click the "🔧 Database" button on the main form
-3. Enter your MySQL connection details:
-   - **Server**: `localhost` (or your MySQL server address)
-   - **Database**: `tasty_eats_db`
-   - **Username**: `root` (or your MySQL username)
-   - **Password**: Your MySQL password
-   - **Port**: `3306` (default MySQL port)
-4. Click "🔍 Test Connection" to verify
-5. Click "💾 Save Settings" to save the configuration
+### 2. Create the Database
 
-#### 4. **Run the Application**
+This project uses EF Core migrations to set up the database.
+
+1.  Open a terminal or command prompt in the project's root directory (`c:\Users\deeja\OnlineOrderingSystem\OnlineOrderingSystem`).
+2.  Run the following command to apply the migrations and create the database:
+
+    ```bash
+    dotnet ef database update
+    ```
+
+### 3. Run the Application
+
+Once the database is set up, you can build and run the application.
+
 ```bash
 dotnet run
 ```
 
-## 🗄️ Database Schema
+## 🗄️ Project Structure
 
-### **Core Tables**
-- **`users`**: Customer accounts and profiles
-- **`menu_items`**: Food items with prices, descriptions, and categories
-- **`categories`**: Menu categories (Starters, Mains, Desserts, Drinks)
-- **`dietary_tags`**: Dietary information (Vegetarian, Spicy, etc.)
-- **`orders`**: Order records with status and delivery information
-- **`order_items`**: Individual items within each order
-- **`cart_items`**: Temporary shopping cart storage
-
-### **Sample Data Included**
-- **13 Menu Items**: Complete menu with realistic items and prices
-- **4 Categories**: Starters, Mains, Desserts, Drinks
-- **7 Dietary Tags**: Vegetarian, Spicy, Healthy, Gluten-Free, Popular, Chef's Pick, British Classic
-- **Sample Orders**: 4 example orders with different statuses
-- **Test Users**: 
-  - **John Doe**: `john.doe@example.com` / `123456`
-  - **Test User**: `test@example.com` / `123456`
-
-## 🎮 How to Use
-
-### **Main Application Flow**
-1. **Login/Register**: Create an account or log in
-2. **Browse Menu**: Use category tabs or search to find items
-3. **Add to Cart**: Click on items to add them to your cart
-4. **Review Cart**: Check your cart contents and adjust quantities
-5. **Checkout**: Complete your order with delivery details
-6. **Track Orders**: View order history and track delivery status
-
-### **Keyboard Shortcuts**
-- **H**: Open Order History
-- **M**: Open Menu
-- **P**: Open Profile
-- **Esc**: Exit Application
-
-### **Database Features**
-- **Automatic Fallback**: If database is unavailable, app uses sample data
-- **Connection Testing**: Built-in connection testing in setup form
-- **Error Handling**: Graceful error messages for database issues
-- **Data Persistence**: All orders and user data saved to database
-
-### **Authentication System**
-- **Secure Password Hashing**: Passwords are hashed using SHA256
-- **User Registration**: New users can register with email validation
-- **User Login**: Database-driven authentication with error handling
-- **Session Management**: Global user session tracking
-- **Test Accounts**: Pre-configured test users for immediate testing
-
-## 🔧 Technical Details
-
-### **Architecture**
-- **Frontend**: Windows Forms (.NET 6.0)
-- **Backend**: C# with MySQL database
-- **Data Access**: Custom data access layer with connection pooling
-- **UI Framework**: Native Windows Forms with custom styling
-
-### **Key Components**
-- **`DatabaseConfig.cs`**: Centralized database connection management
-- **`MenuDataAccess.cs`**: Menu item database operations
-- **`OrderDataAccess.cs`**: Order and cart database operations
-- **`UserDataAccess.cs`**: User authentication and registration operations
-- **`DatabaseSetupForm.cs`**: Database configuration interface
-
-### **Database Connection**
-```csharp
-// Default connection string
-Server=localhost;Database=tasty_eats_db;Uid=root;Pwd=;Port=3306;
-```
-
-## 🐛 Troubleshooting
-
-### **Common Issues**
-
-#### **Database Connection Failed**
-- Verify MySQL server is running
-- Check username/password in database setup
-- Ensure database `tasty_eats_db` exists
-- Verify port 3306 is accessible
-
-#### **Build Errors**
-- Ensure .NET 6.0 SDK is installed
-- Run `dotnet restore` to restore packages
-- Check MySQL.Data package is properly referenced
-
-#### **Application Won't Start**
-- Check all required files are present
-- Verify .NET runtime is installed
-- Run `dotnet build` to check for compilation errors
-
-### **Sample Data Fallback**
-If the database is not available, the application will:
-1. Show a warning message
-2. Load sample menu items from memory
-3. Continue functioning with local data
-4. Display database setup option
-
-## 📁 Project Structure
+The project is organized into the following key directories:
 
 ```
 OnlineOrderingSystem/
-├── Database/
-│   ├── tasty_eats_schema.sql    # Database schema and sample data
-│   ├── DatabaseConfig.cs        # Database connection management
-│   ├── MenuDataAccess.cs        # Menu item database operations
-│   └── OrderDataAccess.cs       # Order and cart database operations
+├── Data/
+│   ├── OrderingDbContext.cs     # EF Core database context.
+│   └── Seeders/                 # Classes to populate the database with initial data.
 ├── Forms/
-│   ├── MainForm.cs              # Main application window
-│   ├── LoginForm.cs             # User authentication
-│   ├── EnhancedMenuForm.cs      # Menu browsing interface
-│   ├── OrderHistoryForm.cs      # Order history and tracking
-│   ├── DatabaseSetupForm.cs     # Database configuration
-│   └── ...                      # Other form files
+│   ├── MainForm.cs              # Main application window.
+│   ├── EnhancedMenuForm.cs      # The primary menu interface.
+│   ├── CartForm.cs              # The user's shopping cart.
+│   └── ...                      # Other UI forms.
+├── Migrations/
+│   └── ...                      # EF Core migration files.
 ├── Models/
-│   ├── Item.cs                  # Menu item model
-│   └── Cart.cs                  # Shopping cart model
-└── Program.cs                   # Application entry point
+│   ├── Item.cs                  # Data model for a menu item.
+│   ├── Order.cs                 # Data model for a customer order.
+│   └── ...                      # Other data models.
+├── Services/
+│   ├── OrderingService.cs       # Business logic for placing orders.
+│   ├── ExceptionHandler.cs      # (Demonstration) Centralized error handling.
+│   └── NotificationService.cs   # (Demonstration) Manages notifications.
+└── Program.cs                   # The application entry point.
 ```
 
-## 🤝 Contributing
+## 🧠 Design Patterns Used
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+This project demonstrates several important design patterns:
+
+-   **Singleton:** The `GlobalClass` and `NotificationService` use the Singleton pattern to ensure only one instance of each exists.
+-   **Observer:** The `NotificationService` implements the Observer pattern to notify different parts of the application about events.
+-   **Strategy:** The `ExceptionHandler` uses a Strategy pattern (via a switch on the exception type) to apply different handling logic for different errors.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-If you encounter any issues:
-1. Check the troubleshooting section above
-2. Verify your MySQL installation and configuration
-3. Ensure all prerequisites are installed
-4. Check the application logs for detailed error messages
-
----
-
-**Enjoy your Tasty Eats experience! 🍕🍔🍰** 
+This project is licensed under the MIT License.
