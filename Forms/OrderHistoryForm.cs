@@ -8,17 +8,31 @@ using System.Linq; // Added for Sum()
 
 namespace OnlineOrderingSystem.Forms
 {
+    /// <summary>
+    /// Represents a form that displays a customer's order history.
+    /// </summary>
+    /// <remarks>
+    /// This form lists all past orders for a given customer and allows the user
+    /// to select an order to view its detailed information, including items, pricing, and payment status.
+    /// </remarks>
     public class OrderHistoryForm : Form
     {
+        // The ID of the customer whose order history is being viewed.
         private int customerId;
-        private ListBox lstOrderHistory;
-        private ListBox lstOrderDetails;
-        private Button btnRefresh;
-        private Button btnBack;
-        private Label lblTitle;
-        private Label lblOrderHistory;
-        private Label lblOrderDetails;
 
+        // UI Controls
+        private ListBox? lstOrderHistory;
+        private ListBox? lstOrderDetails;
+        private Button? btnRefresh;
+        private Button? btnBack;
+        private Label? lblTitle;
+        private Label? lblOrderHistory;
+        private Label? lblOrderDetails;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrderHistoryForm"/> class.
+        /// </summary>
+        /// <param name="customerId">The ID of the customer. Defaults to 1 for demonstration purposes.</param>
         public OrderHistoryForm(int customerId = 1)
         {
             this.customerId = customerId;
@@ -26,6 +40,9 @@ namespace OnlineOrderingSystem.Forms
             LoadOrderHistory();
         }
 
+        /// <summary>
+        /// Initializes the main form components, styling, and layout.
+        /// </summary>
         private void InitializeComponent()
         {
             this.Text = "Tasty Eats - Order History";
@@ -39,9 +56,12 @@ namespace OnlineOrderingSystem.Forms
             SetupEventHandlers();
         }
 
+        /// <summary>
+        /// Creates and configures all the UI controls for the form.
+        /// </summary>
         private void CreateControls()
         {
-            // Title
+            // Main Title Label
             lblTitle = new Label
             {
                 Text = "📋 Order History",
@@ -52,7 +72,7 @@ namespace OnlineOrderingSystem.Forms
                 Size = new Size(900, 40)
             };
 
-            // Order History Section
+            // Order History Section Title
             lblOrderHistory = new Label
             {
                 Text = "Your Orders:",
@@ -62,6 +82,7 @@ namespace OnlineOrderingSystem.Forms
                 Size = new Size(200, 25)
             };
 
+            // ListBox to display the summary of each past order.
             lstOrderHistory = new ListBox
             {
                 Location = new Point(50, 120),
@@ -71,7 +92,7 @@ namespace OnlineOrderingSystem.Forms
                 Font = new Font("Segoe UI", 11)
             };
 
-            // Order Details Section
+            // Order Details Section Title
             lblOrderDetails = new Label
             {
                 Text = "Order Details:",
@@ -81,6 +102,7 @@ namespace OnlineOrderingSystem.Forms
                 Size = new Size(200, 25)
             };
 
+            // ListBox to display the details of a selected order.
             lstOrderDetails = new ListBox
             {
                 Location = new Point(500, 120),
@@ -90,7 +112,7 @@ namespace OnlineOrderingSystem.Forms
                 Font = new Font("Segoe UI", 11)
             };
 
-            // Buttons
+            // Action Buttons
             btnRefresh = new Button
             {
                 Text = "🔄 Refresh",
@@ -115,12 +137,13 @@ namespace OnlineOrderingSystem.Forms
                 Cursor = Cursors.Hand
             };
 
-            // Add controls to form
+            // Add all controls to the form.
             this.Controls.AddRange(new Control[] {
                 lblTitle, lblOrderHistory, lstOrderHistory,
                 lblOrderDetails, lstOrderDetails, btnRefresh, btnBack
             });
 
+            // Ensure labels have a transparent background.
             foreach (Control control in this.Controls)
             {
                 if (control is Label label)
@@ -130,13 +153,22 @@ namespace OnlineOrderingSystem.Forms
             }
         }
 
+        /// <summary>
+        /// Assigns event handlers to the interactive UI controls.
+        /// </summary>
         private void SetupEventHandlers()
         {
-            btnRefresh.Click += BtnRefresh_Click;
-            btnBack.Click += BtnBack_Click;
-            lstOrderHistory.SelectedIndexChanged += LstOrderHistory_SelectedIndexChanged;
+            if (btnRefresh != null)
+                btnRefresh.Click += BtnRefresh_Click;
+            if (btnBack != null)
+                btnBack.Click += BtnBack_Click;
+            if (lstOrderHistory != null)
+                lstOrderHistory.SelectedIndexChanged += LstOrderHistory_SelectedIndexChanged;
         }
 
+        /// <summary>
+        /// Fetches and displays the order history for the customer.
+        /// </summary>
         private void LoadOrderHistory()
         {
             try
@@ -144,15 +176,16 @@ namespace OnlineOrderingSystem.Forms
                 var orderDataAccess = new OrderDataAccess();
                 var orderHistory = orderDataAccess.GetOrderHistoryWithPayments(customerId);
 
-                lstOrderHistory.Items.Clear();
-                lstOrderDetails.Items.Clear();
+                lstOrderHistory?.Items.Clear();
+                lstOrderDetails?.Items.Clear();
 
                 if (orderHistory.Count == 0)
                 {
-                    lstOrderHistory.Items.Add("No orders found. Start ordering to see your history here!");
+                    lstOrderHistory?.Items.Add("No orders found. Start ordering to see your history here!");
                     return;
                 }
 
+                // Populate the order history list with a summary of each order.
                 foreach (var orderWithPayment in orderHistory)
                 {
                     var order = orderWithPayment.Order;
@@ -168,19 +201,19 @@ namespace OnlineOrderingSystem.Forms
                         displayText += $"\nPayment: {payment.PaymentMethod} - {payment.TransactionID}";
                     }
                     
-                    lstOrderHistory.Items.Add(displayText);
+                    lstOrderHistory?.Items.Add(displayText);
                 }
 
-                // Show order statistics
+                // Display overall order statistics in the details view by default.
                 var stats = orderDataAccess.GetOrderStatistics(customerId);
                 var statsText = $"📊 Order Statistics:\n" +
                                $"Total Orders: {stats.totalOrders}\n" +
                                $"Total Spent: £{stats.totalSpent:F2}\n" +
                                $"Average Order: £{stats.averageOrderValue:F2}";
                 
-                lstOrderDetails.Items.Add(statsText);
-                lstOrderDetails.Items.Add(""); // Empty line
-                lstOrderDetails.Items.Add("Select an order from the left to view details.");
+                lstOrderDetails?.Items.Add(statsText);
+                lstOrderDetails?.Items.Add(""); // Empty line for spacing
+                lstOrderDetails?.Items.Add("Select an order from the left to view details.");
             }
             catch (Exception ex)
             {
@@ -189,73 +222,77 @@ namespace OnlineOrderingSystem.Forms
             }
         }
 
+        /// <summary>
+        /// Handles the SelectedIndexChanged event for the order history ListBox.
+        /// Displays detailed information for the newly selected order.
+        /// </summary>
         private void LstOrderHistory_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lstOrderHistory.SelectedIndex >= 0)
+            if (lstOrderHistory?.SelectedIndex >= 0)
             {
                 try
                 {
                     var orderDataAccess = new OrderDataAccess();
                     var orderHistory = orderDataAccess.GetOrderHistoryWithPayments(customerId);
                     
-                    if (lstOrderHistory.SelectedIndex < orderHistory.Count)
+                    if (lstOrderHistory?.SelectedIndex < orderHistory.Count)
                     {
                         var selectedOrderWithPayment = orderHistory[lstOrderHistory.SelectedIndex];
                         var order = selectedOrderWithPayment.Order;
                         var payment = selectedOrderWithPayment.Payment;
 
-                        lstOrderDetails.Items.Clear();
+                        lstOrderDetails?.Items.Clear();
 
-                        // Order Details
-                        lstOrderDetails.Items.Add($"📋 Order #{order.OrderID}");
-                        lstOrderDetails.Items.Add($"Date: {order.OrderDate:dd/MM/yyyy HH:mm}");
-                        lstOrderDetails.Items.Add($"Status: {order.OrderStatus}");
-                        lstOrderDetails.Items.Add($"Payment Status: {order.PaymentStatus}");
-                        lstOrderDetails.Items.Add($"Delivery: {(order.IsDelivery ? "Yes" : "No")}");
+                        // Display general order details.
+                        lstOrderDetails?.Items.Add($"📋 Order #{order.OrderID}");
+                        lstOrderDetails?.Items.Add($"Date: {order.OrderDate:dd/MM/yyyy HH:mm}");
+                        lstOrderDetails?.Items.Add($"Status: {order.OrderStatus}");
+                        lstOrderDetails?.Items.Add($"Payment Status: {order.PaymentStatus}");
+                        lstOrderDetails?.Items.Add($"Delivery: {(order.IsDelivery ? "Yes" : "No")}");
                         if (order.IsDelivery)
                         {
-                            lstOrderDetails.Items.Add($"Address: {order.DeliveryAddress}");
-                            lstOrderDetails.Items.Add($"Estimated: {order.EstimatedDeliveryTime:HH:mm}");
+                            lstOrderDetails?.Items.Add($"Address: {order.DeliveryAddress}");
+                            lstOrderDetails?.Items.Add($"Estimated: {order.EstimatedDeliveryTime:HH:mm}");
                         }
-                        lstOrderDetails.Items.Add("");
+                        lstOrderDetails?.Items.Add("");
 
-                        // Order Items
-                        lstOrderDetails.Items.Add("🍽️ Order Items:");
+                        // Display the items included in the order.
+                        lstOrderDetails?.Items.Add("🍽️ Order Items:");
                         foreach (var item in order.OrderItems)
                         {
-                            lstOrderDetails.Items.Add($"  {item.ItemName} x{item.Quantity} - £{item.TotalPrice:F2}");
+                            lstOrderDetails?.Items.Add($"  {item.ItemName} x{item.Quantity} - £{item.TotalPrice:F2}");
                         }
-                        lstOrderDetails.Items.Add("");
+                        lstOrderDetails?.Items.Add("");
 
-                        // Totals
-                        lstOrderDetails.Items.Add($"Subtotal: £{order.Subtotal:F2}");
-                        lstOrderDetails.Items.Add($"Tax: £{order.TaxAmount:F2}");
-                        lstOrderDetails.Items.Add($"Delivery Fee: £{order.DeliveryFee:F2}");
-                        lstOrderDetails.Items.Add($"Total: £{order.TotalAmount:F2}");
-                        lstOrderDetails.Items.Add("");
+                        // Display pricing details.
+                        lstOrderDetails?.Items.Add($"Subtotal: £{order.Subtotal:F2}");
+                        lstOrderDetails?.Items.Add($"Tax: £{order.TaxAmount:F2}");
+                        lstOrderDetails?.Items.Add($"Delivery Fee: £{order.DeliveryFee:F2}");
+                        lstOrderDetails?.Items.Add($"Total: £{order.TotalAmount:F2}");
+                        lstOrderDetails?.Items.Add("");
 
-                        // Payment Details
+                        // Display payment details if available.
                         if (payment != null)
                         {
-                            lstOrderDetails.Items.Add("💳 Payment Details:");
-                            lstOrderDetails.Items.Add($"  Method: {payment.PaymentMethod}");
-                            lstOrderDetails.Items.Add($"  Amount: £{payment.Amount:F2}");
-                            lstOrderDetails.Items.Add($"  Status: {payment.PaymentStatus}");
-                            lstOrderDetails.Items.Add($"  Transaction ID: {payment.TransactionID}");
-                            lstOrderDetails.Items.Add($"  Date: {payment.PaymentDate:dd/MM/yyyy HH:mm}");
+                            lstOrderDetails?.Items.Add("💳 Payment Details:");
+                            lstOrderDetails?.Items.Add($"  Method: {payment.PaymentMethod}");
+                            lstOrderDetails?.Items.Add($"  Amount: £{payment.Amount:F2}");
+                            lstOrderDetails?.Items.Add($"  Status: {payment.PaymentStatus}");
+                            lstOrderDetails?.Items.Add($"  Transaction ID: {payment.TransactionID}");
+                            lstOrderDetails?.Items.Add($"  Date: {payment.PaymentDate:dd/MM/yyyy HH:mm}");
                         }
 
-                        // Status History
+                        // Display the history of order status changes.
                         if (order.StatusHistory.Any())
                         {
-                            lstOrderDetails.Items.Add("");
-                            lstOrderDetails.Items.Add("📝 Status History:");
+                            lstOrderDetails?.Items.Add("");
+                            lstOrderDetails?.Items.Add("📝 Status History:");
                             foreach (var status in order.StatusHistory.OrderBy(s => s.Timestamp))
                             {
-                                lstOrderDetails.Items.Add($"  {status.Timestamp:HH:mm} - {status.Status}");
+                                lstOrderDetails?.Items.Add($"  {status.Timestamp:HH:mm} - {status.Status}");
                                 if (!string.IsNullOrEmpty(status.Message))
                                 {
-                                    lstOrderDetails.Items.Add($"    {status.Message}");
+                                    lstOrderDetails?.Items.Add($"    {status.Message}");
                                 }
                             }
                         }
@@ -263,17 +300,26 @@ namespace OnlineOrderingSystem.Forms
                 }
                 catch (Exception ex)
                 {
-                    lstOrderDetails.Items.Clear();
-                    lstOrderDetails.Items.Add($"Error loading order details: {ex.Message}");
+                    // Handle errors that occur while loading details.
+                    lstOrderDetails?.Items.Clear();
+                    lstOrderDetails?.Items.Add($"Error loading order details: {ex.Message}");
                 }
             }
         }
 
+        /// <summary>
+        /// Handles the Click event for the Refresh button.
+        /// Reloads the entire order history.
+        /// </summary>
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
             LoadOrderHistory();
         }
 
+        /// <summary>
+        /// Handles the Click event for the Back button.
+        /// Closes the current form.
+        /// </summary>
         private void BtnBack_Click(object sender, EventArgs e)
         {
             this.Close();
