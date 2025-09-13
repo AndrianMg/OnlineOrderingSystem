@@ -16,12 +16,12 @@ namespace OnlineOrderingSystem.Models
     /// </summary>
     public class GlobalClass
     {
-        private static GlobalClass? _instance;
-        private static readonly object _lock = new object();
+        private static GlobalClass? _instance; // Singleton instance
+        private static readonly object _lock = new object(); // Lock object for thread safety
 
-        public Dictionary<string, string> SystemConfig { get; set; } = new Dictionary<string, string>();
-        public Logger Logger { get; set; } = new Logger();
-        public DBConnection DatabaseConnection { get; set; } = new DBConnection();
+        public Dictionary<string, string> SystemConfig { get; set; } = new Dictionary<string, string>(); // Configuration settings
+        public Logger Logger { get; set; } = new Logger(); // Logger instance
+        public DBConnection DatabaseConnection { get; set; } = new DBConnection(); // Database connection instance
 
         /// <summary>
         /// Private constructor to prevent external instantiation
@@ -35,15 +35,15 @@ namespace OnlineOrderingSystem.Models
         /// Gets the singleton instance of GlobalClass
         /// </summary>
         /// <returns>The singleton instance</returns>
-        public static GlobalClass GetInstance()
+        public static GlobalClass GetInstance() // Thread-safe singleton access
         {
-            if (_instance == null)
+            if (_instance == null) // First check
             {
-                lock (_lock)
+                lock (_lock) // Ensure thread safety
                 {
-                    if (_instance == null)
+                    if (_instance == null) // Second check
                     {
-                        _instance = new GlobalClass();
+                        _instance = new GlobalClass(); // Create instance
                     }
                 }
             }

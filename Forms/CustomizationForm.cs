@@ -6,20 +6,39 @@ using OnlineOrderingSystem.Models;
 
 namespace OnlineOrderingSystem.Forms
 {
+    /// <summary>
+    /// Represents a form for customizing a selected menu item.
+    /// </summary>
+    /// <remarks>
+    /// This form allows users to select from a list of available customizations
+    /// for a specific item, dynamically updating the total price based on selections.
+    /// </remarks>
     public class CustomizationForm : Form
     {
+        // The menu item being customized.
         private Item selectedItem;
-        private CheckedListBox chkCustomizations;
-        private Button btnConfirm;
-        private Button btnCancel;
-        private Label lblItemName;
-        private Label lblDescription;
-        private Label lblPrice;
-        private Label lblTotalPrice;
+
+        // UI Controls
+        private CheckedListBox? chkCustomizations;
+        private Button? btnConfirm;
+        private Button? btnCancel;
+        private Label? lblItemName;
+        private Label? lblDescription;
+        private Label? lblPrice;
+        private Label? lblTotalPrice;
+
+        // Holds the names of the chosen customizations.
         private List<string> selectedCustomizations;
 
+        /// <summary>
+        /// Gets the list of selected customization names.
+        /// </summary>
         public List<string> SelectedCustomizations => selectedCustomizations;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomizationForm"/> class.
+        /// </summary>
+        /// <param name="item">The item to be customized.</param>
         public CustomizationForm(Item item)
         {
             selectedItem = item;
@@ -27,6 +46,9 @@ namespace OnlineOrderingSystem.Forms
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Initializes and configures the form's components and layout.
+        /// </summary>
         private void InitializeComponent()
         {
             this.Text = "Tasty Eats - Customize Your Order";
@@ -40,9 +62,12 @@ namespace OnlineOrderingSystem.Forms
             SetupEventHandlers();
         }
 
+        /// <summary>
+        /// Creates and configures the UI controls on the form.
+        /// </summary>
         private void CreateControls()
         {
-            // Title
+            // Title Label
             var lblTitle = new Label
             {
                 Text = "Customize Your Order",
@@ -53,7 +78,7 @@ namespace OnlineOrderingSystem.Forms
                 Size = new Size(500, 30)
             };
 
-            // Item Information
+            // Item Information Labels
             lblItemName = new Label
             {
                 Text = $"Item: {selectedItem.Name}",
@@ -81,7 +106,7 @@ namespace OnlineOrderingSystem.Forms
                 Size = new Size(200, 25)
             };
 
-            // Dietary Information
+            // Dietary Information Label (optional)
             if (selectedItem.DietaryTags.Count > 0)
             {
                 var lblDietary = new Label
@@ -95,7 +120,7 @@ namespace OnlineOrderingSystem.Forms
                 this.Controls.Add(lblDietary);
             }
 
-            // Customization Options
+            // Customization Options Section
             var lblCustomizations = new Label
             {
                 Text = "Available Customizations:",
@@ -114,7 +139,7 @@ namespace OnlineOrderingSystem.Forms
                 Font = new Font("Arial", 11)
             };
 
-            // Total Price
+            // Total Price Label
             lblTotalPrice = new Label
             {
                 Text = $"Total Price: £{selectedItem.Price:F2}",
@@ -124,7 +149,7 @@ namespace OnlineOrderingSystem.Forms
                 Size = new Size(300, 25)
             };
 
-            // Buttons
+            // Action Buttons
             btnConfirm = new Button
             {
                 Text = "Confirm Customizations",
@@ -149,24 +174,33 @@ namespace OnlineOrderingSystem.Forms
                 Cursor = Cursors.Hand
             };
 
-            // Add controls to form
+            // Add all created controls to the form's control collection.
             this.Controls.AddRange(new Control[] {
                 lblTitle, lblItemName, lblDescription, lblPrice,
                 lblCustomizations, chkCustomizations, lblTotalPrice,
                 btnConfirm, btnCancel
             });
 
-            // Populate customization options
+            // Populate the list of customization options.
             PopulateCustomizations();
         }
 
+        /// <summary>
+        /// Wires up event handlers for the interactive controls.
+        /// </summary>
         private void SetupEventHandlers()
         {
-            btnConfirm.Click += BtnConfirm_Click;
-            btnCancel.Click += BtnCancel_Click;
-            chkCustomizations.ItemCheck += ChkCustomizations_ItemCheck;
+            if (btnConfirm != null)
+                btnConfirm.Click += BtnConfirm_Click;
+            if (btnCancel != null)
+                btnCancel.Click += BtnCancel_Click;
+            if (chkCustomizations != null)
+                chkCustomizations.ItemCheck += ChkCustomizations_ItemCheck;
         }
 
+        /// <summary>
+        /// Populates the CheckedListBox with customization options for the selected item.
+        /// </summary>
         private void PopulateCustomizations()
         {
             if (selectedItem.CustomizationOptions.Count > 0)
@@ -182,53 +216,78 @@ namespace OnlineOrderingSystem.Forms
                     {
                         displayText += $" - {option.Description}";
                     }
-                    chkCustomizations.Items.Add(displayText);
+                    if (chkCustomizations != null)
+                    {
+                        chkCustomizations.Items.Add(displayText);
+                    }
                 }
             }
             else
             {
-                chkCustomizations.Items.Add("No customizations available for this item");
-                chkCustomizations.Enabled = false;
+                // Handle items with no customization options.
+                if (chkCustomizations != null)
+                {
+                    chkCustomizations.Items.Add("No customizations available for this item");
+                    chkCustomizations.Enabled = false;
+                }
             }
         }
 
+        /// <summary>
+        /// Handles the ItemCheck event of the chkCustomizations CheckedListBox.
+        /// Recalculates and updates the total price in real-time as options are checked or unchecked.
+        /// </summary>
         private void ChkCustomizations_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            // Calculate total price based on selected customizations
+            if (chkCustomizations == null)
+                return;
+
+            // Start with the base price of the item.
             var totalPrice = selectedItem.Price;
-            
+
+            // Iterate through all customization options to calculate the new total price.
             for (int i = 0; i < chkCustomizations.Items.Count; i++)
             {
+                // Check the future state of the item being changed.
                 if (i == e.Index)
                 {
-                    // This is the item being checked/unchecked
                     if (e.NewValue == CheckState.Checked)
                     {
                         var option = selectedItem.CustomizationOptions[i];
                         totalPrice += option.AdditionalCost;
                     }
                 }
+                // For all other items, check their current checked state.
                 else if (chkCustomizations.GetItemChecked(i))
                 {
-                    // This is an already checked item
                     var option = selectedItem.CustomizationOptions[i];
                     totalPrice += option.AdditionalCost;
                 }
             }
 
-            lblTotalPrice.Text = $"Total Price: £{totalPrice:F2}";
+            // Update the total price label.
+            if (lblTotalPrice != null)
+                lblTotalPrice.Text = $"Total Price: £{totalPrice:F2}";
         }
 
+        /// <summary>
+        /// Handles the Click event of the Confirm button.
+        /// Finalizes the customization selections and closes the form.
+        /// </summary>
         private void BtnConfirm_Click(object sender, EventArgs e)
         {
             selectedCustomizations.Clear();
-            
-            for (int i = 0; i < chkCustomizations.Items.Count; i++)
+
+            if (chkCustomizations != null)
             {
-                if (chkCustomizations.GetItemChecked(i))
+                // Gather all checked customization options.
+                for (int i = 0; i < chkCustomizations.Items.Count; i++)
                 {
-                    var option = selectedItem.CustomizationOptions[i];
-                    selectedCustomizations.Add(option.Name);
+                    if (chkCustomizations.GetItemChecked(i))
+                    {
+                        var option = selectedItem.CustomizationOptions[i];
+                        selectedCustomizations.Add(option.Name);
+                    }
                 }
             }
 
@@ -236,10 +295,14 @@ namespace OnlineOrderingSystem.Forms
             this.Close();
         }
 
+        /// <summary>
+        /// Handles the Click event of the Cancel button.
+        /// Closes the form without saving any customization changes.
+        /// </summary>
         private void BtnCancel_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
     }
-} 
+}
